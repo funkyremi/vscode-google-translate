@@ -32,7 +32,7 @@ function activate(context) {
 						vscode.window.showErrorMessage('Google Translate API issue');
 					}
 				});
-			}) 
+			})
 			.catch(err => {
 				vscode.window.showErrorMessage(err);
 			});

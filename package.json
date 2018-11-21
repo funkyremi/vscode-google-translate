@@ -3,7 +3,7 @@
     "displayName": "Vscode Google Translate",
     "description": "Translate text right in your code",
     "publisher": "funkyremi",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/funkyremi/vscode-google-translate.git"

@@ -1,6 +1,6 @@
-# vscode-translator
+# Vscode Google Translate
 
-Quickly translate selected text right in your code.
+Quickly translate selected text right in your code 😍
 
 ## Features
 
@@ -9,6 +9,6 @@ Quickly translate selected text right in your code.
 
 ## Release Notes
 
-### 1.0.0
+### 1.0.1
 
 Initial release of the inline translator
