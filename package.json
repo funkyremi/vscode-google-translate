@@ -1,0 +1,42 @@
+{
+    "name": "vscode-google-translate",
+    "displayName": "Vscode Google Translate",
+    "description": "Translate text right in your code",
+    "version": "1.0.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/funkyremi/vscode-google-translate.git"
+    },
+    "engines": {
+        "vscode": "^1.29.0"
+    },
+    "categories": [
+        "Formatters"
+    ],
+    "activationEvents": [
+        "onCommand:extension.translateText"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.translateText",
+                "title": "Translate selection"
+            }
+        ]
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "eslint": "^4.11.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.21"
+    },
+    "dependencies": {
+        "node-google-translate-skidz": "^1.1.2"
+    }
+}
