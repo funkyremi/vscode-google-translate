@@ -5,40 +5,52 @@ const languages = require('./languages.js');
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('extension.translateText', function() {
 	const editor = vscode.window.activeTextEditor;
-	const { document, selection } = editor;
-	const charRange = new vscode.Range(
-		selection.start.line,
-		selection.start.character,
-		selection.end.line,
-		selection.end.character
-	);
-	const selectedText = document.getText(charRange);
-
-	if (selectedText.length > 0) {
-		vscode.window.showQuickPick(languages.map(l => l.name))
-			.then(res => {
-				if (!res) return;
-				const { value } = languages.find(t => t.name === res);
-				translate({
-					text: selectedText,
-					source: 'auto',
-					target: value
-				}, (result) => {
-					if (!!result && !!result.translation) {
-						editor.edit(builder => {
-							builder.replace(selection, result.translation);
-						});
-					} else {
-						vscode.window.showErrorMessage('Google Translate API issue');
-					}
+	const { document, selections } = editor;
+	
+	vscode.window.showQuickPick(languages.map(l => l.name))
+		.then(res => {
+			if (!res) return;
+			const { value } = languages.find(t => t.name === res);
+			const promiseResult = selections.map(selection => {
+				const charRange = new vscode.Range(
+					selection.start.line,
+					selection.start.character,
+					selection.end.line,
+					selection.end.character
+				);
+				const selectedText = document.getText(charRange);
+				return new Promise((resolve, reject) => {
+					translate({
+						text: selectedText,
+						source: 'auto',
+						target: value
+					}, result => {
+						if (!!result && !!result.translation) {
+							resolve({
+								selection,
+								translation: result.translation,
+							})
+						} else {
+							reject(new Error('Google Translation API issue'));
+						}
+					});
 				});
-			})
-			.catch(err => {
-				vscode.window.showErrorMessage(err);
 			});
-		} else {
-			vscode.window.showErrorMessage('No text selected');
-		}
+			Promise.all(promiseResult)
+				.then(function(results) {
+					editor.edit(builder => {
+						results.forEach(r => {
+							if (!!r.translation) {
+								builder.replace(r.selection, r.translation);
+							}
+						})
+					});
+				});
+		})
+		.catch(err => {
+			vscode.window.showErrorMessage(err);
+		});
+
 	});
 	context.subscriptions.push(disposable);
 }

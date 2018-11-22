@@ -1,5 +1,18 @@
 # Change Log
-All notable changes to the "vscode-google-translate" extension will be documented in this file.
+
+## 1.1.0
+- Multiselect support
+- Update readme
+- MIT License
+- Gif example
+- Badges
+- Logo
+
+## 1.0.2
+- Minor improvements
+
+## 1.0.1
+- Minor improvements
 
 ## 1.0.0
 - Initial release

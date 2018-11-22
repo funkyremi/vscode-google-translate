@@ -1,19 +1,14 @@
 # Vscode Google Translate
 
+[![Licence](https://img.shields.io/github/license/funkyremi/vscode-google-translate.svg)](https://github.com/funkyremi/vscode-google-translate)
+![VS Code Marketplace](https://vsmarketplacebadge.apphb.com/version-short/funkyremi.vscode-google-translate.svg) ![Rating](https://vsmarketplacebadge.apphb.com/rating-short/funkyremi.vscode-google-translate.svg)
+
 Quickly translate selected text right in your code 😍
 
-## Features
+![Demo](demo.gif)
+
+## Usage
 
 1. Select some text to translate
-1. Press CMD+TT or CTRL+TT
+1. Press CMD+T CMD+T
 1. Select the output languages you want and enjoy 👍
-
-## Release Notes
-
-### 1.0.2
-
-Added default keybinding
-
-### 1.0.1
-
-Initial release of the inline translator

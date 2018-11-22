@@ -3,7 +3,8 @@
     "displayName": "Vscode Google Translate",
     "description": "Translate text right in your code",
     "publisher": "funkyremi",
-    "version": "1.0.2",
+    "version": "1.1.0",
+    "icon": "icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/funkyremi/vscode-google-translate.git"
@@ -22,17 +23,13 @@
         "commands": [
             {
                 "command": "extension.translateText",
-                "title": "Translate selection"
+                "title": "Translate selection(s)"
             }
         ]
     },
     "keybindings": [
         {
           "key": "cmd+t cmd+t",
-          "command": "extension.translateText"
-        },
-        {
-          "key": "ctrl+t ctrl+t",
           "command": "extension.translateText"
         }
     ],
