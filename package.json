@@ -31,6 +31,10 @@
         {
             "key": "cmd+t cmd+t",
             "command": "extension.translateText"
+        },
+        {
+            "key": "ctrl+t ctrl+t",
+            "command": "extension.translateText"
         }
     ],
     "scripts": {
