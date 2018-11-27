@@ -1,6 +1,7 @@
 # Change Log
 
 ## 1.1.1
+- Add recently used languages
 - Add link to buy me a coffee :)
 
 ## 1.1.0
