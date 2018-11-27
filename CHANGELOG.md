@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.1
+- Add link to buy me a coffee :)
+
 ## 1.1.0
 - Multiselect support
 - Update readme
