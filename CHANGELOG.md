@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.3
+- Change key biding to CTRL+SHIFT+T or CMD+SHIFT+T
+
 ## 1.1.2
 - Code improvements
 - Better demo gif
