@@ -10,5 +10,12 @@ Quickly translate selected text right in your code 🚀
 ## Usage
 
 1. Select some text to translate
-1. Press `CMD+SHIFT+T` or `CTRL+SHIFT+T`
+1. Press `ALT+SHIFT+T`
 1. Select the output languages you want and enjoy 👍
+
+## Keyboard shortcut
+
+If the keyboard shortcut doesn't work for you, you have two options:
+
+* Open the command palette and manually select 'Translate selection(s)'
+* Open your keyboard shortcuts, search for 'Translate selection(s)' and set a new shortcut for this command.

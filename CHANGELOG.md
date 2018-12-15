@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.4
+- Change key biding to ALT+SHIFT+T to make it work with most of people
+- Update readme
+
 ## 1.1.3
 - Change key biding to CTRL+SHIFT+T or CMD+SHIFT+T
 
