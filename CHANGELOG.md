@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.5
+- Fix translation issue (#2)
+
 ## 1.1.4
 - Change key biding to ALT+SHIFT+T to make it work with most of people
 - Update readme

@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const translate = require('node-google-translate-skidz');
+const translate = require('google-translate-query');
 const languages = require('./languages.js');
 
 const recentlyUsed = [];
@@ -31,20 +31,20 @@ function getSelectedText(document, selection) {
 
 function getTranslationPromise(selectedText, selectedLanguage, selection) {
 	return new Promise((resolve, reject) => {
-		translate({
-			text: selectedText,
-			source: 'auto',
-			target: selectedLanguage.value,
-		}, result => {
-			if (!!result && !!result.translation) {
-				resolve({
-					selection,
-					translation: result.translation,
-				})
-			} else {
-				reject(new Error('Google Translation API issue'));
-			}
-		});
+		translate(selectedText, {to: selectedLanguage})
+			.then(res => {
+				if (!!res && !!res.text) {
+					resolve({
+						selection,
+						translation: res.text,
+					})
+				} else {
+					reject(new Error('Google Translation API issue'));
+				}
+			})
+			.catch(e => {
+				reject(new Error('Google Translation API issue', e));
+			});
 	});
 }
 
@@ -72,7 +72,8 @@ function activate(context) {
 			if (!res) return;
 			const selectedLanguage = quickPickData.find(t => t.name === res);
 			updateLanguageList(selectedLanguage);
-			Promise.all(getTranslationsPromiseArray(selections, document, selectedLanguage))
+			const translationsPromiseArray = getTranslationsPromiseArray(selections, document, selectedLanguage.value);
+			Promise.all(translationsPromiseArray)
 				.then(function(results) {
 					editor.edit(builder => {
 						results.forEach(r => {
@@ -81,7 +82,8 @@ function activate(context) {
 							}
 						})
 					});
-				});
+				})
+				.catch(e => vscode.window.showErrorMessage(e));
 		})
 		.catch(err => {
 			vscode.window.showErrorMessage(err);

@@ -3,7 +3,7 @@
     "displayName": "Vscode Google Translate",
     "description": "Translate text right in your code",
     "publisher": "funkyremi",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "icon": "icon.png",
     "repository": {
         "type": "git",
@@ -44,6 +44,6 @@
         "vscode": "^1.1.21"
     },
     "dependencies": {
-        "node-google-translate-skidz": "^1.1.2"
+        "google-translate-query": "^2.4.4"
     }
 }
