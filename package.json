@@ -34,7 +34,7 @@
         "configuration": {
             "type": "object",
             "properties": {
-                "vscodeTranslate.preferredLanguage": {
+                "vscodeGoogleTranslate.preferredLanguage": {
                     "type": "string",
                     "default": false,
                     "description": "Your preferred language setting in standard 2-char language Code Reference code"

@@ -20,14 +20,15 @@ If the keyboard shortcut doesn't work for you, you have two options:
 * Open the command palette and manually select 'Translate selection(s)'
 * Open your keyboard shortcuts, search for 'Translate selection(s)' and set a new shortcut for this command.
 
-
 ## Settings
+
 Want to quickly translate into a specific language?
 Here's how to set your preferred language to Japanese.
 
 1. Get your preferred language code from [the web](https://www.w3schools.com/tags/ref_language_codes.asp).
-1. Add the following setting to your workspace: ```"vscodeTranslate.preferredLanguage": "ja"```
-1. Then open the command palette and select "Translate selection(s) to preferred language".
+1. Add the following setting to your workspace: `"vscodeGoogleTranslate.preferredLanguage": "ja"`
+1. Open the command palette and select "Translate selection(s) to preferred language".
 
-* This also works with multiple selections 👍
-* Add ( or re-bind ) a keyboard shortcut to "Translate selection(s) to preferred language" to translate even quicker 👍👍
+## Pull request
+
+Pull request are welcome. Fork the project, clone it, install dependencies `npm i` and start coding :-).
