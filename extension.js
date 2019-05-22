@@ -55,6 +55,11 @@ function getTranslationsPromiseArray(selections, document, selectedLanguage) {
 	});
 }
 
+function getPreferredLanguage() {
+	return vscode.workspace.getConfiguration('vscodeTranslate').get('preferredLanguage');
+}
+
+
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('extension.translateText', function() {
 	const editor = vscode.window.activeTextEditor;
@@ -89,6 +94,31 @@ function activate(context) {
 			vscode.window.showErrorMessage(err);
 		});
 	});
+
+	let translateTextPreferred = vscode.commands.registerCommand('extension.translateTextPreferred', function() {
+		const editor = vscode.window.activeTextEditor;
+		const { document, selections } = editor;
+
+		// vscodeTranslate.preferredLanguage
+		let locale = getPreferredLanguage();
+		if ( !locale ) {
+			return;
+		}
+
+		const translationsPromiseArray = getTranslationsPromiseArray(selections, document, locale);
+		Promise.all( translationsPromiseArray )
+			.then(function(results) {
+				editor.edit(builder => {
+					results.forEach(r => {
+						if (!!r.translation) {
+							builder.replace(r.selection, r.translation);
+						}
+					})
+				});
+			})
+			.catch(e => vscode.window.showErrorMessage(e));
+	} );
+
 	context.subscriptions.push(disposable);
 }
 exports.activate = activate;

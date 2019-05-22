@@ -3,7 +3,7 @@
     "displayName": "Vscode Google Translate",
     "description": "Translate text right in your code",
     "publisher": "funkyremi",
-    "version": "1.1.5",
+    "version": "1.2.0",
     "icon": "icon.png",
     "repository": {
         "type": "git",
@@ -16,7 +16,8 @@
         "Formatters"
     ],
     "activationEvents": [
-        "onCommand:extension.translateText"
+        "onCommand:extension.translateText",
+        "onCommand:extension.translateTextPreferred"
     ],
     "main": "./extension",
     "contributes": {
@@ -24,8 +25,22 @@
             {
                 "command": "extension.translateText",
                 "title": "Translate selection(s)"
+            },
+            {
+                "command": "extension.translateTextPreferred",
+                "title": "Translate selection(s) to preferred language"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "properties": {
+                "vscodeTranslate.preferredLanguage": {
+                    "type": "string",
+                    "default": false,
+                    "description": "Your preferred language setting in standard 2-char language Code Reference code"
+                }
+            }
+        }
     },
     "keybindings": [
         {
