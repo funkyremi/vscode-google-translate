@@ -91,8 +91,8 @@ function getTranslationsPromiseArrayLine(
 
 function getPreferredLanguage() {
   return vscode.workspace
-  .getConfiguration("vscodeGoogleTranslate")
-  .get("preferredLanguage");
+    .getConfiguration("vscodeGoogleTranslate")
+    .get("preferredLanguage");
 }
 
 function activate(context) {
