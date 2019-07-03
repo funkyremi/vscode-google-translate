@@ -178,6 +178,56 @@ function activate(context) {
     function translateLinesUnderCursorcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
+
+      const quickPickData = recentlyUsed
+      .map(r => ({
+        name: r.name.includes("(recently used)")
+          ? r.name
+          : `${r.name} (recently used)`,
+        value: r.value
+      }))
+      .concat(languages);
+
+      vscode.window
+        .showQuickPick(quickPickData.map(l => l.name))
+        .then(res => {
+          if (!res) return;
+          const selectedLanguage = quickPickData.find(t => t.name === res);
+          updateLanguageList(selectedLanguage);
+          const translationsPromiseArray = getTranslationsPromiseArrayLine(
+            selections,
+            document,
+            selectedLanguage.value
+          );
+          Promise.all(translationsPromiseArray)
+            .then(function(results) {
+              editor.edit(builder => {
+                results.forEach(r => {
+                  if (!!r.translation) {
+                    const ffix = ['', '\n'];
+                    if (editor.document.lineCount - 1 === r.selection.start.line)
+                      [ffix[0], ffix[1]] = [ffix[1], ffix[0]];
+                    const p = new vscode.Position(r.selection.start.line + 1);
+                    builder.insert(p, `${ffix[0]}${r.translation}${ffix[1]}`);
+                  }
+                });
+              });
+            })
+          .catch(e => vscode.window.showErrorMessage(e));
+        })
+        .catch(err => {
+          vscode.window.showErrorMessage(err);
+        });
+    }
+  );
+
+  context.subscriptions.push(translateLinesUnderCursor);
+
+  let translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
+    'extension.translateLinesUnderCursorPreferred',
+    function translateLinesUnderCursorPreferredcallback() {
+      const editor = vscode.window.activeTextEditor;
+      const { document, selections } = editor;
       let locale = getPreferredLanguage();
       if (!locale) {
         vscode.window.showWarningMessage(
@@ -210,7 +260,7 @@ function activate(context) {
     }
   );
 
-  context.subscriptions.push(translateLinesUnderCursor);
+  context.subscriptions.push(translateLinesUnderCursorPreferred);
 }
 exports.activate = activate;
 

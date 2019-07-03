@@ -1,69 +1,79 @@
 {
-    "name": "vscode-google-translate",
-    "displayName": "Vscode Google Translate",
-    "description": "Translate text right in your code",
-    "publisher": "funkyremi",
-    "version": "1.3.0",
-    "icon": "icon.png",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/funkyremi/vscode-google-translate.git"
-    },
-    "engines": {
-        "vscode": "^1.29.0"
-    },
-    "categories": [
-        "Formatters"
-    ],
-    "activationEvents": [
-        "onCommand:extension.translateText",
-        "onCommand:extension.translateTextPreferred",
-        "onCommand:extension.translateLinesUnderCursor"
-    ],
-    "main": "./extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "extension.translateText",
-                "title": "Translate selection(s)"
-            },
-            {
-                "command": "extension.translateTextPreferred",
-                "title": "Translate selection(s) to preferred language"
-            },
-            {
-                "command": "extension.translateLinesUnderCursor",
-                "title": "Translate line(s) under cursor"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "properties": {
-                "vscodeGoogleTranslate.preferredLanguage": {
-                    "type": "string",
-                    "default": false,
-                    "description": "Your preferred language setting in standard 2-char language Code Reference code"
-                }
-            }
-        }
-    },
-    "keybindings": [
-        {
-            "key": "alt+shit+t",
-            "command": "extension.translateText"
-        }
-    ],
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "@types/mocha": "^5.2.5",
-        "@types/node": "^10.12.10",
-        "eslint": "^4.11.0",
-        "vscode": "^1.1.21"
-    },
-    "dependencies": {
-        "google-translate-query": "^2.4.4"
-    }
+	"name": "vscode-google-translate",
+	"displayName": "Vscode Google Translate",
+	"description": "Translate text right in your code",
+	"publisher": "funkyremi",
+	"version": "1.3.0",
+	"icon": "icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/funkyremi/vscode-google-translate.git"
+	},
+	"engines": {
+		"vscode": "^1.29.0"
+	},
+	"categories": [
+		"Formatters"
+	],
+	"activationEvents": [
+		"onCommand:extension.translateText",
+		"onCommand:extension.translateTextPreferred",
+		"onCommand:extension.translateLinesUnderCursor",
+		"onCommand:extension.translateLinesUnderCursorPreferred"
+	],
+	"main": "./extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.translateText",
+				"title": "Translate selection(s)"
+			},
+			{
+				"command": "extension.translateTextPreferred",
+				"title": "Translate selection(s) to preferred language"
+			},
+			{
+				"command": "extension.translateLinesUnderCursor",
+				"title": "Translate line(s) under the cursor"
+			},
+			{
+				"command": "extension.translateLinesUnderCursorPreferred",
+				"title": "Translate line(s) under the cursor to preferred language"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"properties": {
+				"vscodeGoogleTranslate.preferredLanguage": {
+					"type": "string",
+					"default": false,
+					"description": "Your preferred language setting in standard 2-char language Code Reference code"
+				}
+			}
+		}
+	},
+	"keybindings": [
+		{
+			"key": "alt+shit+t",
+			"command": "extension.translateText"
+		}
+	],
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"@types/mocha": "^5.2.5",
+		"@types/node": "^10.12.10",
+		"eslint": "^4.11.0",
+		"vscode": "^1.1.21"
+	},
+	"dependencies": {
+		"google-translate-query": "^2.4.4"
+	},
+	"__metadata": {
+		"id": "50134257-3dbb-4e6d-a67f-a7fd3632d86b",
+		"publisherDisplayName": "funkyremi",
+		"publisherId": "ed75dfdf-aada-41ae-853e-511a05002b6e"
+	}
 }
