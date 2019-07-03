@@ -17,7 +17,7 @@ Quickly translate text right in your code 🚀
 
 ### Translate a line under cursor
 
-This feature appends a newline under the current one with translation
+This feature inserts a newline under the current one with translation
 
 1. Set cursor/cursors on line(s) to translate
 1. Select menu 'Translate line(s) under the cursor'
