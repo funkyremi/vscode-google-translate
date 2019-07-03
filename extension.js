@@ -2,8 +2,25 @@ const vscode = require("vscode");
 const translate = require("google-translate-query");
 const languages = require("./languages.js");
 
+/**
+ * @typedef TranslateRes
+ * @property {vscode.Selection} selection Selection
+ * @property {string} translation Result
+ */
+
+/**
+ * The list of recently used languages
+ *
+ * @type {Array.<string>}
+ */
 const recentlyUsed = [];
 
+/**
+ * Updates languages lists for the convenience of users
+ *
+ * @param {string} selectedLanguage The language code to update
+ * @returns {undefined}
+ */
 function updateLanguageList(selectedLanguage) {
   if (recentlyUsed.find(r => r.value === selectedLanguage.value)) {
     // Remove the recently used language from the list
@@ -21,6 +38,13 @@ function updateLanguageList(selectedLanguage) {
   recentlyUsed.splice(0, 0, selectedLanguage);
 }
 
+/**
+ * Extracts a text from the active document selection
+ *
+ * @param {vscode.TextDocument} document The current document
+ * @param {vscode.Selection} selection The current selection
+ * @returns {string} A text
+ */
 function getSelectedText(document, selection) {
   const charRange = new vscode.Range(
     selection.start.line,
@@ -32,11 +56,11 @@ function getSelectedText(document, selection) {
 }
 
 /**
- * Gets the first line from active selection as a Range
+ * Gets a text of the first line from active selection
  *
- * @param {vscode.TextDocument} document
- * @param {vscode.Selection} selection
- * @returns {vscode.Range}
+ * @param {vscode.TextDocument} document The current document
+ * @param {vscode.Selection} selection The current selection
+ * @returns {string}
  */
 function getSelectedLineText(document, selection) {
   return document.getText(
@@ -44,12 +68,20 @@ function getSelectedLineText(document, selection) {
   );
 }
 
+/**
+ * Translates the selectedText to the selectedLanguage like a Promise
+ *
+ * @param {string} selectedText Text
+ * @param {string} selectedLanguage Language
+ * @param {vscode.Selection} selection Selection
+ * @returns {Promise.<TranslateRes>}
+ */
 function getTranslationPromise(selectedText, selectedLanguage, selection) {
   return new Promise((resolve, reject) => {
     translate(selectedText, { to: selectedLanguage })
       .then(res => {
         if (!!res && !!res.text) {
-          resolve({
+          resolve(/** @type {TranslateRes} */{
             selection,
             translation: res.text
           });
@@ -63,6 +95,14 @@ function getTranslationPromise(selectedText, selectedLanguage, selection) {
   });
 }
 
+/**
+ * Generates the array of promises based on selections
+ *
+ * @param {Array.<vscode.Selection>} selections Array of selections
+ * @param {vscode.TextDocument} document The current document
+ * @param {string} selectedLanguage The current language
+ * @returns {Array.<Promise<TranslateRes>>}
+ */
 function getTranslationsPromiseArray(selections, document, selectedLanguage) {
   return selections.map(selection => {
     const selectedText = getSelectedText(document, selection);
@@ -73,10 +113,10 @@ function getTranslationsPromiseArray(selections, document, selectedLanguage) {
 /**
  * Gets arrays of Translation Promises based on the first lines under the cursor.
  *
- * @param {vscode.Selection} selections
- * @param {vscode.TextDocument} document
+ * @param {vscode.Selection} selections The current selection
+ * @param {vscode.TextDocument} document The current document
  * @param {string} selectedLanguage
- * @returns {Array.<Promise>}
+ * @returns {Array.<Promise<TranslateRes>>}
  */
 function getTranslationsPromiseArrayLine(
   selections,
@@ -89,12 +129,23 @@ function getTranslationsPromiseArrayLine(
   });
 }
 
+/**
+ * Returns user settings Preferred language
+ *
+ * @returns {string}
+ */
 function getPreferredLanguage() {
   return vscode.workspace
     .getConfiguration("vscodeGoogleTranslate")
     .get("preferredLanguage");
 }
 
+/**
+ * Platform binding function
+ *
+ * @param {vscode.ExtensionContext} context
+ * @returns {undefined} There is no an API public surface now (7/3/2019)
+ */
 function activate(context) {
   let translateText = vscode.commands.registerCommand(
     "extension.translateText",
@@ -264,6 +315,13 @@ function activate(context) {
 }
 exports.activate = activate;
 
-// this method is called when your extension is deactivated
+
+/**
+ * Platform binding function
+ * this method is called when your extension is deactivated
+ *
+ * @param {vscode.ExtensionContext} context
+ * @returns {undefined} There is no an API public surface now (7/3/2019)
+ */
 function deactivate() {}
 exports.deactivate = deactivate;
