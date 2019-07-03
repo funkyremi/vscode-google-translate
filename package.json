@@ -17,7 +17,8 @@
     ],
     "activationEvents": [
         "onCommand:extension.translateText",
-        "onCommand:extension.translateTextPreferred"
+        "onCommand:extension.translateTextPreferred",
+        "onCommand:extension.translateLinesUnderCursor"
     ],
     "main": "./extension",
     "contributes": {
@@ -29,6 +30,10 @@
             {
                 "command": "extension.translateTextPreferred",
                 "title": "Translate selection(s) to preferred language"
+            },
+            {
+                "command": "extension.translateLinesUnderCursor",
+                "title": "Translate line(s) under cursor"
             }
         ],
         "configuration": {

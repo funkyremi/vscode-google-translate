@@ -31,6 +31,19 @@ function getSelectedText(document, selection) {
   return document.getText(charRange);
 }
 
+/**
+ * Gets the first line from active selection as a Range
+ *
+ * @param {vscode.TextDocument} document
+ * @param {vscode.Selection} selection
+ * @returns {vscode.Range}
+ */
+function getSelectedLineText(document, selection) {
+  return document.getText(
+    document.lineAt(selection.start.line).rangeIncludingLineBreak
+  );
+}
+
 function getTranslationPromise(selectedText, selectedLanguage, selection) {
   return new Promise((resolve, reject) => {
     translate(selectedText, { to: selectedLanguage })
@@ -57,10 +70,29 @@ function getTranslationsPromiseArray(selections, document, selectedLanguage) {
   });
 }
 
+/**
+ * Gets arrays of Translation Promises based on the first lines under the cursor.
+ *
+ * @param {vscode.Selection} selections
+ * @param {vscode.TextDocument} document
+ * @param {string} selectedLanguage
+ * @returns {Array.<Promise>}
+ */
+function getTranslationsPromiseArrayLine(
+  selections,
+  document,
+  selectedLanguage
+) {
+  return selections.map(selection => {
+    const selectedLineText = getSelectedLineText(document, selection);
+    return getTranslationPromise(selectedLineText, selectedLanguage, selection);
+  });
+}
+
 function getPreferredLanguage() {
   return vscode.workspace
-    .getConfiguration("vscodeGoogleTranslate")
-    .get("preferredLanguage");
+  .getConfiguration("vscodeGoogleTranslate")
+  .get("preferredLanguage");
 }
 
 function activate(context) {
@@ -140,6 +172,45 @@ function activate(context) {
     }
   );
   context.subscriptions.push(translateTextPreferred);
+
+  let translateLinesUnderCursor = vscode.commands.registerCommand(
+    'extension.translateLinesUnderCursor',
+    function translateLinesUnderCursorcallback() {
+      const editor = vscode.window.activeTextEditor;
+      const { document, selections } = editor;
+      let locale = getPreferredLanguage();
+      if (!locale) {
+        vscode.window.showWarningMessage(
+          'Prefered language is requeried for this feature! Please set this in the settings.'
+          );
+        return;
+      }
+
+      const translationsPromiseArray = getTranslationsPromiseArrayLine(
+        selections,
+        document,
+        locale
+      );
+
+      Promise.all(translationsPromiseArray)
+        .then(function(results) {
+          editor.edit(builder => {
+            results.forEach(r => {
+              if (!!r.translation) {
+                const ffix = ['', '\n'];
+                if (editor.document.lineCount - 1 === r.selection.start.line)
+                  [ffix[0], ffix[1]] = [ffix[1], ffix[0]];
+                const p = new vscode.Position(r.selection.start.line + 1);
+                builder.insert(p, `${ffix[0]}${r.translation}${ffix[1]}`);
+              }
+            });
+          });
+        })
+        .catch(e => vscode.window.showErrorMessage(e));
+    }
+  );
+
+  context.subscriptions.push(translateLinesUnderCursor);
 }
 exports.activate = activate;
 
