@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.0
+- Add the translate of a line feature
+
 ## 1.1.5
 - Fix translation issue (#2)
 
