@@ -15,6 +15,14 @@ Quickly translate text right in your code 🚀
 1. Press `ALT+SHIFT+T`
 1. Select the output languages you want and enjoy 👍
 
+### Translate a line under cursor
+
+This feature appends a newline under the current one with translation
+
+1. Set cursor/cursors on line(s) to translate
+1. Select menu 'Translate line(s) under the cursor'
+1. Select the output languages you want and enjoy
+
 ## Keyboard shortcut
 
 If the keyboard shortcut doesn't work for you, you have two options:
