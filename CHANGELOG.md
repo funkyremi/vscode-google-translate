@@ -3,6 +3,9 @@
 ## 1.3.0
 - Add the translate of a line feature
 
+## 1.2.0
+- Prefered language setting
+
 ## 1.1.5
 - Fix translation issue (#2)
 
