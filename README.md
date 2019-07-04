@@ -42,3 +42,7 @@ Here's how to set your preferred language to Japanese.
 ## Pull request
 
 Pull request are welcome. Fork the project, clone it, install dependencies `npm i` and start coding :-).
+
+## Give five stars 🤩
+
+If you like it, [rate it](https://marketplace.visualstudio.com/items?itemName=funkyremi.vscode-google-translate&ssr=false#review-details)
