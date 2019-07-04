@@ -3,15 +3,25 @@
 [![Licence](https://img.shields.io/github/license/funkyremi/vscode-google-translate.svg)](https://github.com/funkyremi/vscode-google-translate)
 ![VS Code Marketplace](https://vsmarketplacebadge.apphb.com/version-short/funkyremi.vscode-google-translate.svg) ![Rating](https://vsmarketplacebadge.apphb.com/rating-short/funkyremi.vscode-google-translate.svg)
 
-Quickly translate selected text right in your code 🚀
+Quickly translate text right in your code 🚀
 
 ![Demo](demo.gif)
 
 ## Usage
 
+### Translate selected text
+
 1. Select some text to translate
 1. Press `ALT+SHIFT+T`
 1. Select the output languages you want and enjoy 👍
+
+### Translate a line under cursor
+
+This feature inserts a newline under the current one with translation
+
+1. Set cursor/cursors on line(s) to translate
+1. Select menu 'Translate line(s) under the cursor'
+1. Select the output languages you want and enjoy
 
 ## Keyboard shortcut
 
