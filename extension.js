@@ -1,5 +1,5 @@
 const vscode = require("vscode");
-const translate = require("google-translate-query");
+const translate = require("node-google-translate-skidz");
 const languages = require("./languages.js");
 
 /**
@@ -78,20 +78,18 @@ function getSelectedLineText(document, selection) {
  */
 function getTranslationPromise(selectedText, selectedLanguage, selection) {
   return new Promise((resolve, reject) => {
-    translate(selectedText, { to: selectedLanguage })
-      .then(res => {
-        if (!!res && !!res.text) {
-          resolve(/** @type {TranslateRes} */{
+    translate({ text: selectedText, target: selectedLanguage }, res => {
+      if (!!res && !!res.translation) {
+        resolve(
+          /** @type {TranslateRes} */ {
             selection,
-            translation: res.text
-          });
-        } else {
-          reject(new Error("Google Translation API issue"));
-        }
-      })
-      .catch(e => {
-        reject(new Error("Google Translation API issue", e));
-      });
+            translation: res.translation
+          }
+        );
+      } else {
+        reject(new Error("Google Translation API issue"));
+      }
+    });
   });
 }
 
@@ -225,19 +223,19 @@ function activate(context) {
   context.subscriptions.push(translateTextPreferred);
 
   let translateLinesUnderCursor = vscode.commands.registerCommand(
-    'extension.translateLinesUnderCursor',
+    "extension.translateLinesUnderCursor",
     function translateLinesUnderCursorcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
 
       const quickPickData = recentlyUsed
-      .map(r => ({
-        name: r.name.includes("(recently used)")
-          ? r.name
-          : `${r.name} (recently used)`,
-        value: r.value
-      }))
-      .concat(languages);
+        .map(r => ({
+          name: r.name.includes("(recently used)")
+            ? r.name
+            : `${r.name} (recently used)`,
+          value: r.value
+        }))
+        .concat(languages);
 
       vscode.window
         .showQuickPick(quickPickData.map(l => l.name))
@@ -255,8 +253,11 @@ function activate(context) {
               editor.edit(builder => {
                 results.forEach(r => {
                   if (!!r.translation) {
-                    const ffix = ['', '\n'];
-                    if (editor.document.lineCount - 1 === r.selection.start.line)
+                    const ffix = ["", "\n"];
+                    if (
+                      editor.document.lineCount - 1 ===
+                      r.selection.start.line
+                    )
                       [ffix[0], ffix[1]] = [ffix[1], ffix[0]];
                     const p = new vscode.Position(r.selection.start.line + 1);
                     builder.insert(p, `${ffix[0]}${r.translation}${ffix[1]}`);
@@ -264,7 +265,7 @@ function activate(context) {
                 });
               });
             })
-          .catch(e => vscode.window.showErrorMessage(e));
+            .catch(e => vscode.window.showErrorMessage(e));
         })
         .catch(err => {
           vscode.window.showErrorMessage(err);
@@ -275,15 +276,15 @@ function activate(context) {
   context.subscriptions.push(translateLinesUnderCursor);
 
   let translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
-    'extension.translateLinesUnderCursorPreferred',
+    "extension.translateLinesUnderCursorPreferred",
     function translateLinesUnderCursorPreferredcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
       let locale = getPreferredLanguage();
       if (!locale) {
         vscode.window.showWarningMessage(
-          'Prefered language is requeried for this feature! Please set this in the settings.'
-          );
+          "Prefered language is requeried for this feature! Please set this in the settings."
+        );
         return;
       }
 
@@ -298,7 +299,7 @@ function activate(context) {
           editor.edit(builder => {
             results.forEach(r => {
               if (!!r.translation) {
-                const ffix = ['', '\n'];
+                const ffix = ["", "\n"];
                 if (editor.document.lineCount - 1 === r.selection.start.line)
                   [ffix[0], ffix[1]] = [ffix[1], ffix[0]];
                 const p = new vscode.Position(r.selection.start.line + 1);
@@ -314,7 +315,6 @@ function activate(context) {
   context.subscriptions.push(translateLinesUnderCursorPreferred);
 }
 exports.activate = activate;
-
 
 /**
  * Platform binding function

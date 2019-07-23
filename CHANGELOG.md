@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.1
+- Fix 'translation does nothing' random issue
+
 ## 1.3.0
 - Add the translate of a line feature
 
