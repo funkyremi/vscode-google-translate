@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.2
+- Fix 'plugin stopped working' due to google unofficial api that stopped working
+
 ## 1.3.1
 - Fix 'translation does nothing' random issue
 

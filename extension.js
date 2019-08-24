@@ -1,6 +1,6 @@
 const vscode = require("vscode");
-const translate = require("node-google-translate-skidz");
 const languages = require("./languages.js");
+const translate = require("google-translate-open-api").default;
 
 /**
  * @typedef TranslateRes
@@ -76,20 +76,26 @@ function getSelectedLineText(document, selection) {
  * @param {vscode.Selection} selection Selection
  * @returns {Promise.<TranslateRes>}
  */
-function getTranslationPromise(selectedText, selectedLanguage, selection) {
+function getTranslationPromise(
+  selectedText,
+  selectedLanguage,
+  selection
+) {
   return new Promise((resolve, reject) => {
-    translate({ text: selectedText, target: selectedLanguage }, res => {
-      if (!!res && !!res.translation) {
-        resolve(
-          /** @type {TranslateRes} */ {
-            selection,
-            translation: res.translation
-          }
-        );
-      } else {
-        reject(new Error("Google Translation API issue"));
-      }
-    });
+    translate(selectedText, { to: selectedLanguage })
+      .then(res => {
+        if (!!res && !!res.data) {
+          resolve(
+            /** @type {TranslateRes} */ {
+              selection,
+              translation: res.data[0]
+            }
+          );
+        } else {
+          reject(new Error("Google Translation API issue"));
+        }
+      })
+      .catch(e => reject(new Error("Google Translation API issue")));
   });
 }
 
