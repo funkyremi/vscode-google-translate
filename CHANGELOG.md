@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.3
+
+- Fix error messages not displayed
+
 ## 1.3.2
 - Fix 'plugin stopped working' due to google unofficial api that stopped working
 
