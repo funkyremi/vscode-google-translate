@@ -95,7 +95,7 @@ function getTranslationPromise(
           reject(new Error("Google Translation API issue"));
         }
       })
-      .catch(e => reject(new Error("Google Translation API issue")));
+      .catch(e => reject(new Error("Google Translation API issue: " + e.message)));
   });
 }
 
@@ -187,10 +187,10 @@ function activate(context) {
                 });
               });
             })
-            .catch(e => vscode.window.showErrorMessage(e));
+            .catch(e => vscode.window.showErrorMessage(e.message));
         })
         .catch(err => {
-          vscode.window.showErrorMessage(err);
+          vscode.window.showErrorMessage(err.message);
         });
     }
   );
@@ -223,7 +223,7 @@ function activate(context) {
             });
           });
         })
-        .catch(e => vscode.window.showErrorMessage(e));
+        .catch(e => vscode.window.showErrorMessage(e.message));
     }
   );
   context.subscriptions.push(translateTextPreferred);
@@ -271,10 +271,10 @@ function activate(context) {
                 });
               });
             })
-            .catch(e => vscode.window.showErrorMessage(e));
+            .catch(e => vscode.window.showErrorMessage(e.message));
         })
         .catch(err => {
-          vscode.window.showErrorMessage(err);
+          vscode.window.showErrorMessage(err.message);
         });
     }
   );
@@ -314,7 +314,7 @@ function activate(context) {
             });
           });
         })
-        .catch(e => vscode.window.showErrorMessage(e));
+        .catch(e => vscode.window.showErrorMessage(e.message));
     }
   );
 
