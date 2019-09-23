@@ -4,6 +4,7 @@
 
 - Proxy support
 - Fix HTML entity not decoded
+- CI/CD with Github Actions
 
 ## 1.3.3
 
