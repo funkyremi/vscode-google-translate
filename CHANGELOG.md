@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.4.0
+
+- Proxy support
+- Fix HTML entity not decoded
+
 ## 1.3.3
 
 - Fix error messages not displayed

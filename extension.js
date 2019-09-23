@@ -77,13 +77,25 @@ function getSelectedLineText(document, selection) {
  * @param {vscode.Selection} selection Selection
  * @returns {Promise.<TranslateRes>}
  */
-function getTranslationPromise(
-  selectedText,
-  selectedLanguage,
-  selection
-) {
+function getTranslationPromise(selectedText, selectedLanguage, selection) {
   return new Promise((resolve, reject) => {
-    translate(selectedText, { to: selectedLanguage })
+    const { host, port, username, password } = getProxyConfig();
+    const translationConfiguration = {
+      to: selectedLanguage,
+    };
+    if (!!host) {
+      translationConfiguration.proxy = {
+        host,
+        port: Number(port),
+      }
+      if (!!username) {
+        translationConfiguration.proxy.auth = {
+          username,
+          password,
+        }
+      }
+    }
+    translate(selectedText, translationConfiguration)
       .then(res => {
         if (!!res && !!res.data) {
           resolve(
@@ -96,7 +108,9 @@ function getTranslationPromise(
           reject(new Error("Google Translation API issue"));
         }
       })
-      .catch(e => reject(new Error("Google Translation API issue: " + e.message)));
+      .catch(e =>
+        reject(new Error("Google Translation API issue: " + e.message))
+      );
   });
 }
 
@@ -143,6 +157,21 @@ function getPreferredLanguage() {
   return vscode.workspace
     .getConfiguration("vscodeGoogleTranslate")
     .get("preferredLanguage");
+}
+
+/**
+ * Returns user settings proxy config
+ *
+ * @returns {string}
+ */
+function getProxyConfig() {
+  const config = vscode.workspace.getConfiguration("vscodeGoogleTranslate");
+  return {
+    host: config.get("proxyHost"),
+    port: config.get("proxyPort"),
+    username: config.get("proxyUsername"),
+    password: config.get("proxyPassword"),
+  }
 }
 
 /**

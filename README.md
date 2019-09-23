@@ -30,7 +30,7 @@ If the keyboard shortcut doesn't work for you, you have two options:
 * Open the command palette and manually select 'Translate selection(s)'
 * Open your keyboard shortcuts, search for 'Translate selection(s)' and set a new shortcut for this command.
 
-## Settings
+## Preferred language settings
 
 Want to quickly translate into a specific language?
 Here's how to set your preferred language to Japanese.
@@ -38,6 +38,17 @@ Here's how to set your preferred language to Japanese.
 1. Get your preferred language code from [the web](https://www.w3schools.com/tags/ref_language_codes.asp).
 1. Add the following setting to your workspace: `"vscodeGoogleTranslate.preferredLanguage": "ja"`
 1. Open the command palette and select "Translate selection(s) to preferred language".
+
+## Proxy Support
+
+You can use a proxy to translate text with the following settings:
+
+```js
+"vscodeGoogleTranslate.host": "120.0.0.1"       // Proxy disabled if empty
+"vscodeGoogleTranslate.port": "8080"            // Proxy port
+"vscodeGoogleTranslate.username": "admin"       // Proxy auth disabled if empty
+"vscodeGoogleTranslate.password": "password"    // Proxy password
+```
 
 ## Pull request
 

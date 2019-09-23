@@ -3,7 +3,7 @@
     "displayName": "Vscode Google Translate",
     "description": "Translate text right in your code",
     "publisher": "funkyremi",
-    "version": "1.3.3",
+    "version": "1.4.0",
     "icon": "icon.png",
     "repository": {
         "type": "git",
@@ -42,12 +42,28 @@
             }
         ],
         "configuration": {
+            "title": "Vscode Google Translate",
             "type": "object",
             "properties": {
                 "vscodeGoogleTranslate.preferredLanguage": {
                     "type": "string",
-                    "default": false,
-                    "description": "Your preferred language setting in standard 2-char language Code Reference code"
+                    "description": "The preferred language setting in standard 2-char language Code Reference code"
+                },
+                "vscodeGoogleTranslate.proxyHost": {
+                    "type": "string",
+                    "description": "The proxy host (set it to enable proxy)"
+                },
+                "vscodeGoogleTranslate.proxyPort": {
+                    "type": "string",
+                    "description": "The proxy port"
+                },
+                "vscodeGoogleTranslate.proxyUsername": {
+                    "type": "string",
+                    "description": "The proxy username (optional)"
+                },
+                "vscodeGoogleTranslate.proxyPassword": {
+                    "type": "string",
+                    "description": "The proxy password (optional)"
                 }
             }
         }
@@ -69,7 +85,7 @@
         "vscode": "^1.1.35"
     },
     "dependencies": {
-        "google-translate-open-api": "^1.2.0",
+        "google-translate-open-api": "^1.3.1",
         "he": "^1.2.0"
     }
 }
