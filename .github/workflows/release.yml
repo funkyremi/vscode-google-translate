@@ -10,10 +10,6 @@ jobs:
       uses: actions/npm@master
       with:
         args: install --unsafe-perm
-    - name: Master
-      uses: actions/bin/filter@master
-      with:
-        args: branch master
     - name: Publish
       uses: lannonbr/vsce-action@master
       env:
