@@ -1,6 +1,7 @@
 const vscode = require("vscode");
 const languages = require("./languages.js");
 const translate = require("google-translate-open-api").default;
+const he = require("he");
 
 /**
  * @typedef TranslateRes
@@ -182,7 +183,7 @@ function activate(context) {
               editor.edit(builder => {
                 results.forEach(r => {
                   if (!!r.translation) {
-                    builder.replace(r.selection, r.translation);
+                    builder.replace(r.selection, he.decode(r.translation));
                   }
                 });
               });
@@ -218,7 +219,7 @@ function activate(context) {
           editor.edit(builder => {
             results.forEach(r => {
               if (!!r.translation) {
-                builder.replace(r.selection, r.translation);
+                builder.replace(r.selection, he.decode(r.translation));
               }
             });
           });

@@ -69,6 +69,7 @@
         "vscode": "^1.1.35"
     },
     "dependencies": {
-        "google-translate-open-api": "^1.2.0"
+        "google-translate-open-api": "^1.2.0",
+        "he": "^1.2.0"
     }
 }
