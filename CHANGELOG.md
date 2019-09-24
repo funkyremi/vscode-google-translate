@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.2
+
+- Improve CI/CD
+
 ## 1.4.1
 
 - Fix multi-line text translation

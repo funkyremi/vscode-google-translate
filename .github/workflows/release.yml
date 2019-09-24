@@ -1,12 +1,14 @@
-on: release
+on:
+  release:
+    types: [published]
 name: Deploy Extension
 jobs:
-  npmInstall:
-    name: npm install
+  Publish:
+    name: Publish
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: npm install
+    - name: Install
       uses: actions/npm@master
       with:
         args: install --unsafe-perm
