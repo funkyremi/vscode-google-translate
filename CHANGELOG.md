@@ -1,21 +1,17 @@
 # Change Log
 
 ## 1.4.2
-
 - Improve CI/CD
 
 ## 1.4.1
-
 - Fix multi-line text translation
 
 ## 1.4.0
-
 - Proxy support
 - Fix HTML entity not decoded
 - CI/CD with Github Actions
 
 ## 1.3.3
-
 - Fix error messages not displayed
 
 ## 1.3.2
