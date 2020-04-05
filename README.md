@@ -39,8 +39,6 @@ Here's how to set your preferred language to Japanese.
 1. Add the following setting to your workspace: `"vscodeGoogleTranslate.preferredLanguage": "ja"`
 1. Open the command palette and select "Translate selection(s) to preferred language".
 
-
-
 ## Proxy Support
 
 You can use a proxy to translate text with the following settings:
