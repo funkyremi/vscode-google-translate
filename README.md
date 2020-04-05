@@ -39,9 +39,6 @@ Here's how to set your preferred language to Japanese.
 1. Add the following setting to your workspace: `"vscodeGoogleTranslate.preferredLanguage": "ja"`
 1. Open the command palette and select "Translate selection(s) to preferred language".
 
-* language code of Chinese are ：
-* Chinese (Simplified) → zh-CN	
-* Chinese (Traditional) → zh-TW
 
 
 ## Proxy Support
