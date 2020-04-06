@@ -39,8 +39,11 @@ const languages = [
 		name: 'Cebuano',
 		value: 'ceb',
 	}, {
-		name: 'Chinese',
+		name: 'Chinese (Simplified)',
 		value: 'zh-CN',
+	}, {
+		name: 'Chinese (Traditional)',
+		value: 'zh-TW',
 	}, {
 		name: 'Corsican',
 		value: 'co',
