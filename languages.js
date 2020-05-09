@@ -291,6 +291,9 @@ const languages = [
 		name: 'Urdu',
 		value: 'ur',
 	}, {
+		name: 'Uyghur',
+		value: 'ug',
+	}, {
 		name: 'Uzbek',
 		value: 'uz',
 	}, {
