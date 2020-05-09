@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.5
+- Update translation library
+
 ## 1.4.4
 - Add Uyghur language
 
