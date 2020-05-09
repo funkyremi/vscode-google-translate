@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.4
+- Add Uyghur language
+
 ## 1.4.3
 - Add Chinese Traditional language
 
