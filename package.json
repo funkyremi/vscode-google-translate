@@ -74,14 +74,15 @@
                     "description": "The proxy password (Optional)"
                 }
             }
-        }
+        },
+        "keybindings": [
+            {
+                "key": "ctrl+alt+t",
+                "when": "editorTextFocus",
+                "command": "extension.translateTextPreferred"
+            }
+        ]
     },
-    "keybindings": [
-        {
-            "key": "alt+shift+t",
-            "command": "extension.translateText"
-        }
-    ],
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"

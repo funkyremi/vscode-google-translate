@@ -2,7 +2,6 @@ const vscode = require("vscode");
 const languages = require("./languages.js");
 const translate = require("google-translate-open-api").default;
 const he = require("he");
-const { get } = require("https");
 
 /**
  * @typedef TranslateRes
