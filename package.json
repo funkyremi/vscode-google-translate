@@ -48,23 +48,25 @@
             "properties": {
                 "vscodeGoogleTranslate.preferredLanguage": {
                     "type": "string",
-                    "description": "The preferred language setting in standard 2-char language Code Reference code"
+                    "default": "Spanish",
+                    "enum": ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azeerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Cebuano", "Chinese (Simplified)", "Chinese (Traditional)", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Finnish", "French", "Frisian", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar", "Nepali", "Norwegian", "Nyanja", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog", "Tajik", "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"],
+                    "description": "The preferred language"
                 },
                 "vscodeGoogleTranslate.proxyHost": {
                     "type": "string",
-                    "description": "The proxy host (set it to enable proxy)"
+                    "description": "The proxy host (set it to enable proxy) (Optional)"
                 },
                 "vscodeGoogleTranslate.proxyPort": {
                     "type": "string",
-                    "description": "The proxy port"
+                    "description": "The proxy port (Optional)"
                 },
                 "vscodeGoogleTranslate.proxyUsername": {
                     "type": "string",
-                    "description": "The proxy username (optional)"
+                    "description": "The proxy username (Optional)"
                 },
                 "vscodeGoogleTranslate.proxyPassword": {
                     "type": "string",
-                    "description": "The proxy password (optional)"
+                    "description": "The proxy password (Optional)"
                 }
             }
         }

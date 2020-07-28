@@ -233,7 +233,7 @@ function activate(context) {
       const { document, selections } = editor;
 
       // vscodeTranslate.preferredLanguage
-      let locale = getPreferredLanguage();
+      let locale = languages.find(element => element.name === getPreferredLanguage()).value;
       if (!locale) {
         return;
       }
@@ -316,7 +316,7 @@ function activate(context) {
     function translateLinesUnderCursorPreferredcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
-      let locale = getPreferredLanguage();
+      let locale = languages.find(element => element.name === getPreferredLanguage()).value;
       if (!locale) {
         vscode.window.showWarningMessage(
           "Prefered language is requeried for this feature! Please set this in the settings."
