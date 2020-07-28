@@ -18,6 +18,7 @@
     ],
     "activationEvents": [
         "onCommand:extension.translateText",
+        "onCommand:extension.setPreferredLanguage",
         "onCommand:extension.translateTextPreferred",
         "onCommand:extension.translateLinesUnderCursor",
         "onCommand:extension.translateLinesUnderCursorPreferred"
@@ -38,6 +39,10 @@
                 "title": "Translate line(s) under the cursor"
             },
             {
+                "command": "extension.setPreferredLanguage",
+                "title": "Set preferred target language"
+            },
+            {
                 "command": "extension.translateLinesUnderCursorPreferred",
                 "title": "Translate line(s) under the cursor to preferred language"
             }
@@ -50,7 +55,7 @@
                     "type": "string",
                     "default": "Spanish",
                     "enum": ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azeerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Cebuano", "Chinese (Simplified)", "Chinese (Traditional)", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Finnish", "French", "Frisian", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar", "Nepali", "Norwegian", "Nyanja", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog", "Tajik", "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"],
-                    "description": "The preferred language"
+                    "description": "The preferred target language"
                 },
                 "vscodeGoogleTranslate.proxyHost": {
                     "type": "string",

@@ -226,6 +226,30 @@ function activate(context) {
   );
   context.subscriptions.push(translateText);
 
+  let setPreferredLanguage = vscode.commands.registerCommand(
+    "extension.setPreferredLanguage",
+    function() {
+      const editor = vscode.window.activeTextEditor;
+      const { document, selections } = editor;
+
+      const quickPickData = recentlyUsed
+        .map(r => ({
+          name: r.name.includes("(recently used)")
+            ? r.name
+            : `${r.name} (recently used)`,
+          value: r.value
+        }))
+        .concat(languages);
+
+      vscode.window
+        .showQuickPick(quickPickData.map(l => l.name))
+        .then(res => {
+          vscode.workspace.getConfiguration().update("vscodeGoogleTranslate.preferredLanguage", res, vscode.ConfigurationTarget.Global);
+        })
+    }
+  )
+  context.subscriptions.push(setPreferredLanguage);
+
   let translateTextPreferred = vscode.commands.registerCommand(
     "extension.translateTextPreferred",
     function() {
