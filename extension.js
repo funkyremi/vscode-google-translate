@@ -2,6 +2,7 @@ const vscode = require("vscode");
 const languages = require("./languages.js");
 const translate = require("google-translate-open-api").default;
 const he = require("he");
+const { get } = require("https");
 
 /**
  * @typedef TranslateRes
@@ -23,17 +24,10 @@ const recentlyUsed = [];
  * @returns {undefined}
  */
 function updateLanguageList(selectedLanguage) {
-  if (recentlyUsed.find(r => r.value === selectedLanguage.value)) {
+  const index = recentlyUsed.findIndex(r => r === selectedLanguage);
+  if (index !== -1) {
     // Remove the recently used language from the list
-    const index = recentlyUsed.findIndex(
-      r => r.value === selectedLanguage.value
-    );
     recentlyUsed.splice(index, 1);
-  }
-  if (languages.find(r => r.value === selectedLanguage.value)) {
-    // Remove the recently used language from languages list
-    const index = languages.findIndex(r => r.value === selectedLanguage.value);
-    languages.splice(index, 1);
   }
   // Add the language in recently used languages
   recentlyUsed.splice(0, 0, selectedLanguage);
@@ -189,23 +183,20 @@ function activate(context) {
 
       const quickPickData = recentlyUsed
         .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+          label: r,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map(r => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          if (!res) return;
-          const selectedLanguage = quickPickData.find(t => t.name === res);
-          updateLanguageList(selectedLanguage);
+        .showQuickPick(quickPickData)
+        .then(selectedLanguage => {
+          if (!selectedLanguage) return;
+          updateLanguageList(selectedLanguage.label);
           const translationsPromiseArray = getTranslationsPromiseArray(
             selections,
             document,
-            selectedLanguage.value
+            languages.find(r => r.name === selectedLanguage.label).value
           );
           Promise.all(translationsPromiseArray)
             .then(function(results) {
@@ -234,17 +225,18 @@ function activate(context) {
 
       const quickPickData = recentlyUsed
         .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+          label: r,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map(r => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          vscode.workspace.getConfiguration().update("vscodeGoogleTranslate.preferredLanguage", res, vscode.ConfigurationTarget.Global);
+        .showQuickPick(quickPickData)
+        .then(selectedLanguage => {
+          if (!selectedLanguage) {
+            return;
+          }
+          vscode.workspace.getConfiguration().update("vscodeGoogleTranslate.preferredLanguage", selectedLanguage.label, vscode.ConfigurationTarget.Global);
         })
     }
   )
@@ -257,7 +249,8 @@ function activate(context) {
       const { document, selections } = editor;
 
       // vscodeTranslate.preferredLanguage
-      let locale = languages.find(element => element.name === getPreferredLanguage()).value;
+      let preferredLanguage = getPreferredLanguage();
+      let locale = languages.find(element => element.name === preferredLanguage).value;
       if (!locale) {
         return;
       }
@@ -290,23 +283,20 @@ function activate(context) {
 
       const quickPickData = recentlyUsed
         .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+          label: r.name,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map(r => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          if (!res) return;
-          const selectedLanguage = quickPickData.find(t => t.name === res);
-          updateLanguageList(selectedLanguage);
+        .showQuickPick(quickPickData)
+        .then(selectedLanguage => {
+          if (!selectedLanguage) return;
+          updateLanguageList(selectedLanguage.label);
           const translationsPromiseArray = getTranslationsPromiseArrayLine(
             selections,
             document,
-            selectedLanguage.value
+            languages.find(r => r.name === selectedLanguage.label).value
           );
           Promise.all(translationsPromiseArray)
             .then(function(results) {

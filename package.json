@@ -78,7 +78,7 @@
     },
     "keybindings": [
         {
-            "key": "alt+shit+t",
+            "key": "alt+shift+t",
             "command": "extension.translateText"
         }
     ],
