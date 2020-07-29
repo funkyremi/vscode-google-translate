@@ -12,7 +12,7 @@ Quickly translate text right in your code 🚀
 ### Translate selected text
 
 1. Select some text to translate
-1. Press `ALT+SHIFT+T`
+1. Press `CTRL+ALT+T`
 1. Select the output languages you want and enjoy 👍
 
 ### Translate a line under cursor
@@ -23,21 +23,10 @@ This feature inserts a newline under the current one with translation
 1. Select menu 'Translate line(s) under the cursor'
 1. Select the output languages you want and enjoy
 
-## Keyboard shortcut
-
-If the keyboard shortcut doesn't work for you, you have two options:
-
-* Open the command palette and manually select 'Translate selection(s)'
-* Open your keyboard shortcuts, search for 'Translate selection(s)' and set a new shortcut for this command.
-
 ## Preferred language settings
 
 Want to quickly translate into a specific language?
-Here's how to set your preferred language to Japanese.
-
-1. Get your preferred language code from [the web](https://www.w3schools.com/tags/ref_language_codes.asp).
-1. Add the following setting to your workspace: `"vscodeGoogleTranslate.preferredLanguage": "ja"`
-1. Open the command palette and select "Translate selection(s) to preferred language".
+Run Command 'Set Preferred Language' or Set it in VSCode extension settings
 
 ## Proxy Support
 
