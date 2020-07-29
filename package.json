@@ -17,33 +17,33 @@
         "Formatters"
     ],
     "activationEvents": [
-        "onCommand:extension.translateText",
-        "onCommand:extension.setPreferredLanguage",
-        "onCommand:extension.translateTextPreferred",
-        "onCommand:extension.translateLinesUnderCursor",
-        "onCommand:extension.translateLinesUnderCursorPreferred"
+        "onCommand:vscodeGoogleTranslate.translateText",
+        "onCommand:vscodeGoogleTranslate.setPreferredLanguage",
+        "onCommand:vscodeGoogleTranslate.translateTextPreferred",
+        "onCommand:vscodeGoogleTranslate.translateLinesUnderCursor",
+        "onCommand:vscodeGoogleTranslate.translateLinesUnderCursorPreferred"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.translateText",
+                "command": "vscodeGoogleTranslate.translateText",
                 "title": "Translate selection(s)"
             },
             {
-                "command": "extension.translateTextPreferred",
+                "command": "vscodeGoogleTranslate.translateTextPreferred",
                 "title": "Translate selection(s) to preferred language"
             },
             {
-                "command": "extension.translateLinesUnderCursor",
+                "command": "vscodeGoogleTranslate.translateLinesUnderCursor",
                 "title": "Translate line(s) under the cursor"
             },
             {
-                "command": "extension.setPreferredLanguage",
+                "command": "vscodeGoogleTranslate.setPreferredLanguage",
                 "title": "Set preferred target language"
             },
             {
-                "command": "extension.translateLinesUnderCursorPreferred",
+                "command": "vscodeGoogleTranslate.translateLinesUnderCursorPreferred",
                 "title": "Translate line(s) under the cursor to preferred language"
             }
         ],
@@ -53,7 +53,6 @@
             "properties": {
                 "vscodeGoogleTranslate.preferredLanguage": {
                     "type": "string",
-                    "default": "Spanish",
                     "enum": ["Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azeerbaijani", "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan", "Cebuano", "Chinese (Simplified)", "Chinese (Traditional)", "Corsican", "Croatian", "Czech", "Danish", "Dutch", "English", "Esperanto", "Estonian", "Finnish", "French", "Frisian", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian", "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latin", "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar", "Nepali", "Norwegian", "Nyanja", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog", "Tajik", "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu", "Uyghur", "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"],
                     "description": "The preferred target language"
                 },
@@ -79,7 +78,7 @@
             {
                 "key": "ctrl+alt+t",
                 "when": "editorTextFocus",
-                "command": "extension.translateTextPreferred"
+                "command": "vscodeGoogleTranslate.translateTextPreferred"
             }
         ]
     },

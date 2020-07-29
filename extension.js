@@ -142,14 +142,39 @@ function getTranslationsPromiseArrayLine(
 }
 
 /**
- * Returns user settings Preferred language
- *
- * @returns {string}
+ * Returns user settings Preferred language.
+ * If user hasn't set preferred lang. Prompt to set.
  */
-function getPreferredLanguage() {
-  return vscode.workspace
+async function getPreferredLanguage() {
+  var pref = vscode.workspace
     .getConfiguration("vscodeGoogleTranslate")
     .get("preferredLanguage");
+
+  if (!pref) {
+    return setPreferredLanguage()
+  }
+  return pref;
+}
+
+function setPreferredLanguage() {
+  const editor = vscode.window.activeTextEditor;
+
+  const quickPickData = recentlyUsed
+    .map(r => ({
+      label: r,
+      description: "(recently used)",
+    }))
+    .concat(languages.map(r => ({ label: r.name })));
+
+  return vscode.window
+    .showQuickPick(quickPickData)
+    .then(selectedLanguage => {
+      if (!selectedLanguage) {
+        return;
+      }
+      vscode.workspace.getConfiguration().update("vscodeGoogleTranslate.preferredLanguage", selectedLanguage.label, vscode.ConfigurationTarget.Global);
+      return selectedLanguage.label;
+    })
 }
 
 /**
@@ -175,7 +200,7 @@ function getProxyConfig() {
  */
 function activate(context) {
   let translateText = vscode.commands.registerCommand(
-    "extension.translateText",
+    "vscodeGoogleTranslate.translateText",
     function() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
@@ -216,39 +241,17 @@ function activate(context) {
   );
   context.subscriptions.push(translateText);
 
-  let setPreferredLanguage = vscode.commands.registerCommand(
-    "extension.setPreferredLanguage",
-    function() {
-      const editor = vscode.window.activeTextEditor;
-      const { document, selections } = editor;
-
-      const quickPickData = recentlyUsed
-        .map(r => ({
-          label: r,
-          description: "(recently used)",
-        }))
-        .concat(languages.map(r => ({ label: r.name })));
-
-      vscode.window
-        .showQuickPick(quickPickData)
-        .then(selectedLanguage => {
-          if (!selectedLanguage) {
-            return;
-          }
-          vscode.workspace.getConfiguration().update("vscodeGoogleTranslate.preferredLanguage", selectedLanguage.label, vscode.ConfigurationTarget.Global);
-        })
-    }
-  )
-  context.subscriptions.push(setPreferredLanguage);
+  let setPreferredLanguageFnc = vscode.commands.registerCommand("vscodeGoogleTranslate.setPreferredLanguage", setPreferredLanguage);
+  context.subscriptions.push(setPreferredLanguageFnc);
 
   let translateTextPreferred = vscode.commands.registerCommand(
-    "extension.translateTextPreferred",
-    function() {
+    "vscodeGoogleTranslate.translateTextPreferred",
+    async function() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
 
       // vscodeTranslate.preferredLanguage
-      let preferredLanguage = getPreferredLanguage();
+      let preferredLanguage = await getPreferredLanguage();
       let locale = languages.find(element => element.name === preferredLanguage).value;
       if (!locale) {
         return;
@@ -275,7 +278,7 @@ function activate(context) {
   context.subscriptions.push(translateTextPreferred);
 
   let translateLinesUnderCursor = vscode.commands.registerCommand(
-    "extension.translateLinesUnderCursor",
+    "vscodeGoogleTranslate.translateLinesUnderCursor",
     function translateLinesUnderCursorcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
@@ -325,11 +328,12 @@ function activate(context) {
   context.subscriptions.push(translateLinesUnderCursor);
 
   let translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
-    "extension.translateLinesUnderCursorPreferred",
-    function translateLinesUnderCursorPreferredcallback() {
+    "vscodeGoogleTranslate.translateLinesUnderCursorPreferred",
+    async function translateLinesUnderCursorPreferredcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
-      let locale = languages.find(element => element.name === getPreferredLanguage()).value;
+      var preferredLanguage = await getPreferredLanguage();
+      let locale = languages.find(element => element.name === preferredLanguage).value;
       if (!locale) {
         vscode.window.showWarningMessage(
           "Prefered language is requeried for this feature! Please set this in the settings."
