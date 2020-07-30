@@ -2,6 +2,8 @@ const vscode = require("vscode");
 const languages = require("./languages.js");
 const translate = require("google-translate-open-api").default;
 const he = require("he");
+const path = require('path');
+const vscodeLanguageClient = require('vscode-languageclient');
 
 /**
  * @typedef TranslateRes
@@ -15,6 +17,8 @@ const he = require("he");
  * @type {Array.<string>}
  */
 const recentlyUsed = [];
+
+let client = null;
 
 /**
  * Updates languages lists for the convenience of users
@@ -157,7 +161,6 @@ async function getPreferredLanguage() {
 }
 
 function setPreferredLanguage() {
-  const editor = vscode.window.activeTextEditor;
 
   const quickPickData = recentlyUsed
     .map(r => ({
@@ -198,7 +201,7 @@ function getProxyConfig() {
  * @param {vscode.ExtensionContext} context
  * @returns {undefined} There is no an API public surface now (7/3/2019)
  */
-function activate(context) {
+async function activate(context) {
   let translateText = vscode.commands.registerCommand(
     "vscodeGoogleTranslate.translateText",
     function() {
@@ -364,8 +367,84 @@ function activate(context) {
         .catch(e => vscode.window.showErrorMessage(e.message));
     }
   );
-
   context.subscriptions.push(translateLinesUnderCursorPreferred);
+
+  console.log("about to start initializing server from client");
+  // The server is implemented in node
+  let serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
+  // The debug options for the server
+  // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
+  let debugOptions = { execArgv: ['--nolazy', '--inspect=16009'] };
+  // If the extension is launched in debug mode then the debug server options are used
+  // Otherwise the run options are used
+  let serverOptions = {
+      run: { module: serverModule, transport: vscodeLanguageClient.TransportKind.ipc },
+      debug: {
+          module: serverModule,
+          transport: vscodeLanguageClient.TransportKind.ipc,
+          options: debugOptions
+      }
+  };
+  let extAll = vscode.extensions.all;
+  let languageId = 2;
+  let grammarExtensions = [];
+  let canLanguages = [];
+  extAll.forEach(extension => {
+      if (!(extension.packageJSON.contributes && extension.packageJSON.contributes.grammars))
+          return;
+      let languages = [];
+      (extension.packageJSON.contributes && extension.packageJSON.contributes.languages || []).forEach((language) => {
+          languages.push({
+              id: languageId++,
+              name: language.id
+          });
+      });
+      grammarExtensions.push({
+          languages: languages,
+          value: extension.packageJSON.contributes && extension.packageJSON.contributes.grammars,
+          extensionLocation: extension.extensionPath
+      });
+      canLanguages = canLanguages.concat(extension.packageJSON.contributes.grammars.map((g) => g.language));
+  });
+  let BlackLanguage = ['log', 'Log'];
+  let userLanguage = vscode.env.language;
+  // Options to control the language client
+  let clientOptions = {
+      // Register the server for plain text documents
+      revealOutputChannelOn: 4,
+      initializationOptions: {
+          grammarExtensions, appRoot: vscode.env.appRoot, userLanguage
+      },
+      documentSelector: canLanguages.filter(v => v).filter((v) => BlackLanguage.indexOf(v) < 0),
+      synchronize: {
+      // Notify the server about file changes to '.clientrc files contained in the workspace
+      // fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+      }
+  };
+  // Create the language client and start the client.
+  client = new vscodeLanguageClient.LanguageClient('CommentTranslate', 'Comment Translate', serverOptions, clientOptions);
+  // Start the client. This will also launch the server
+  client.start();
+  //client准备就绪后再其他服务
+  await client.onReady();
+  client.onRequest('selectionContains', (textDocumentPosition) => {
+      let editor = vscode.window.activeTextEditor;
+      //有活动editor，并且打开文档与请求文档一致时处理请求
+      if (editor && editor.document.uri.toString() === textDocumentPosition.textDocument.uri) {
+          //类型转换
+          let position = new vscode.Position(textDocumentPosition.position.line, textDocumentPosition.position.character);
+          let selection = editor.selections.find((selection) => {
+              return !selection.isEmpty && selection.contains(position);
+          });
+          if (selection) {
+              return {
+                  range: selection,
+                  comment: editor.document.getText(selection)
+              };
+          }
+      }
+      return null;
+  });
 }
 exports.activate = activate;
 
