@@ -17,33 +17,33 @@
         "Formatters"
     ],
     "activationEvents": [
-        "onCommand:vscodeGoogleTranslate.translateText",
-        "onCommand:vscodeGoogleTranslate.setPreferredLanguage",
-        "onCommand:vscodeGoogleTranslate.translateTextPreferred",
-        "onCommand:vscodeGoogleTranslate.translateLinesUnderCursor",
-        "onCommand:vscodeGoogleTranslate.translateLinesUnderCursorPreferred"
+        "onCommand:extension.translateText",
+        "onCommand:extension.setPreferredLanguage",
+        "onCommand:extension.translateTextPreferred",
+        "onCommand:extension.translateLinesUnderCursor",
+        "onCommand:extension.translateLinesUnderCursorPreferred"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
-                "command": "vscodeGoogleTranslate.translateText",
+                "command": "extension.translateText",
                 "title": "Translate selection(s)"
             },
             {
-                "command": "vscodeGoogleTranslate.translateTextPreferred",
+                "command": "extension.translateTextPreferred",
                 "title": "Translate selection(s) to preferred language"
             },
             {
-                "command": "vscodeGoogleTranslate.translateLinesUnderCursor",
+                "command": "extension.translateLinesUnderCursor",
                 "title": "Translate line(s) under the cursor"
             },
             {
-                "command": "vscodeGoogleTranslate.setPreferredLanguage",
+                "command": "extension.setPreferredLanguage",
                 "title": "Set preferred target language"
             },
             {
-                "command": "vscodeGoogleTranslate.translateLinesUnderCursorPreferred",
+                "command": "extension.translateLinesUnderCursorPreferred",
                 "title": "Translate line(s) under the cursor to preferred language"
             }
         ],
@@ -76,9 +76,9 @@
         },
         "keybindings": [
             {
-                "key": "ctrl+alt+t",
+                "key": "alt+shift+t",
                 "when": "editorTextFocus",
-                "command": "vscodeGoogleTranslate.translateTextPreferred"
+                "command": "extension.translateTextPreferred"
             }
         ]
     },

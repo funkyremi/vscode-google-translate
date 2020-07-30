@@ -146,14 +146,10 @@ function getTranslationsPromiseArrayLine(
  * If user hasn't set preferred lang. Prompt to set.
  */
 async function getPreferredLanguage() {
-  var pref = vscode.workspace
+  return vscode.workspace
     .getConfiguration("vscodeGoogleTranslate")
-    .get("preferredLanguage");
-
-  if (!pref) {
-    return setPreferredLanguage()
-  }
-  return pref;
+    .get("preferredLanguage")
+    || setPreferredLanguage();
 }
 
 function setPreferredLanguage() {
@@ -200,7 +196,7 @@ function getProxyConfig() {
  */
 function activate(context) {
   let translateText = vscode.commands.registerCommand(
-    "vscodeGoogleTranslate.translateText",
+    "extension.translateText",
     function() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
@@ -241,11 +237,11 @@ function activate(context) {
   );
   context.subscriptions.push(translateText);
 
-  let setPreferredLanguageFnc = vscode.commands.registerCommand("vscodeGoogleTranslate.setPreferredLanguage", setPreferredLanguage);
+  let setPreferredLanguageFnc = vscode.commands.registerCommand("extension.setPreferredLanguage", setPreferredLanguage);
   context.subscriptions.push(setPreferredLanguageFnc);
 
   let translateTextPreferred = vscode.commands.registerCommand(
-    "vscodeGoogleTranslate.translateTextPreferred",
+    "extension.translateTextPreferred",
     async function() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
@@ -278,7 +274,7 @@ function activate(context) {
   context.subscriptions.push(translateTextPreferred);
 
   let translateLinesUnderCursor = vscode.commands.registerCommand(
-    "vscodeGoogleTranslate.translateLinesUnderCursor",
+    "extension.translateLinesUnderCursor",
     function translateLinesUnderCursorcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
@@ -328,11 +324,11 @@ function activate(context) {
   context.subscriptions.push(translateLinesUnderCursor);
 
   let translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
-    "vscodeGoogleTranslate.translateLinesUnderCursorPreferred",
+    "extension.translateLinesUnderCursorPreferred",
     async function translateLinesUnderCursorPreferredcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
-      var preferredLanguage = await getPreferredLanguage();
+      let preferredLanguage = await getPreferredLanguage();
       let locale = languages.find(element => element.name === preferredLanguage).value;
       if (!locale) {
         vscode.window.showWarningMessage(
