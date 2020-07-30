@@ -43,6 +43,9 @@ You can use a proxy to translate text with the following settings:
 
 Pull request are welcome. Fork the project, clone it, install dependencies `npm i` and start coding :-).
 
+If you want to make changes to the code hovering translations. Please run "npm run compile" from the root in order to compile the typescript
+part of the codebase.
+
 ## Give five stars 🤩
 
 If you like it, [rate it](https://marketplace.visualstudio.com/items?itemName=funkyremi.vscode-google-translate&ssr=false#review-details)

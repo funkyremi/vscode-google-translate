@@ -369,7 +369,6 @@ async function activate(context) {
   );
   context.subscriptions.push(translateLinesUnderCursorPreferred);
 
-  console.log("about to start initializing server from client");
   // The server is implemented in node
   let serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
   // The debug options for the server
@@ -416,20 +415,14 @@ async function activate(context) {
           grammarExtensions, appRoot: vscode.env.appRoot, userLanguage
       },
       documentSelector: canLanguages.filter(v => v).filter((v) => BlackLanguage.indexOf(v) < 0),
-      synchronize: {
-      // Notify the server about file changes to '.clientrc files contained in the workspace
-      // fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
-      }
   };
   // Create the language client and start the client.
   client = new vscodeLanguageClient.LanguageClient('CommentTranslate', 'Comment Translate', serverOptions, clientOptions);
   // Start the client. This will also launch the server
   client.start();
-  //client准备就绪后再其他服务
   await client.onReady();
   client.onRequest('selectionContains', (textDocumentPosition) => {
       let editor = vscode.window.activeTextEditor;
-      //有活动editor，并且打开文档与请求文档一致时处理请求
       if (editor && editor.document.uri.toString() === textDocumentPosition.textDocument.uri) {
           //类型转换
           let position = new vscode.Position(textDocumentPosition.position.line, textDocumentPosition.position.character);

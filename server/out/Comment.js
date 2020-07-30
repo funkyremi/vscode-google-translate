@@ -14,27 +14,29 @@ const humanizeString = require("humanize-string");
 const CommentParse_1 = require("./syntax/CommentParse");
 const TextMateService_1 = require("./syntax/TextMateService");
 const google_translate_open_api_1 = require("google-translate-open-api");
+const languages = require("../../languages");
 class Comment {
     constructor(extensions, _documents, _connection) {
         this._documents = _documents;
         this._connection = _connection;
         this._commentParseCache = new Map();
-        this._setting = { multiLineMerge: false, targetLanguage: extensions.userLanguage, concise: false };
+        this._setting = { multiLineMerge: false, preferredLanguage: extensions.userLanguage, concise: false };
         this._textMateService = new TextMateService_1.TextMateService(extensions.grammarExtensions, extensions.appRoot);
         //关闭文档或内容变更，移除缓存
         _documents.onDidClose(e => this._removeCommentParse(e.document));
         _documents.onDidChangeContent(e => this._removeCommentParse(e.document));
     }
     setSetting(newSetting) {
-        if (!newSetting.targetLanguage) {
-            newSetting.targetLanguage = this._setting.targetLanguage;
+        if (!newSetting.preferredLanguage) {
+            newSetting.preferredLanguage = this._setting.preferredLanguage;
         }
         this._setting = Object.assign(this._setting, newSetting);
+        this._setting.preferredLanguage = languages.find(element => element.name === this._setting.preferredLanguage).value;
     }
     translate(text) {
         return __awaiter(this, void 0, void 0, function* () {
             let translationConfiguration = {
-                to: this._setting.targetLanguage,
+                to: this._setting.preferredLanguage,
             };
             return yield google_translate_open_api_1.default(text, translationConfiguration).then(res => {
                 if (!!res && !!res.data) {
@@ -61,7 +63,6 @@ class Comment {
         let key = `${textDocument.languageId}-${textDocument.uri}`;
         this._commentParseCache.delete(key);
     }
-    //缓存已匹配部分，加快hover运行时间
     _getCommentParse(textDocument) {
         return __awaiter(this, void 0, void 0, function* () {
             let key = `${textDocument.languageId}-${textDocument.uri}`;
@@ -80,14 +81,12 @@ class Comment {
             if (!textDocument)
                 return null;
             let parse = yield this._getCommentParse(textDocument);
-            //优先判断是hover坐标是否为选中区域。 优先翻译选择区域
             let block = yield this._getSelectionContainPosition(textDocumentPosition);
             if (!block) {
                 block = yield parse.computeText(textDocumentPosition.position, this._setting.concise);
             }
             if (block) {
                 if (block.humanize) {
-                    //转换为可以自然语言分割
                     let humanize = humanizeString(block.comment);
                     let targetLanguageComment = yield this.translate(humanize);
                     return {
