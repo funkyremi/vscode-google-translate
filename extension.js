@@ -2,6 +2,8 @@ const vscode = require("vscode");
 const languages = require("./languages.js");
 const translate = require("google-translate-open-api").default;
 const he = require("he");
+const humanizeString = require("humanize-string");
+const camelcase = require("camelcase");
 
 /**
  * @typedef TranslateRes
@@ -98,12 +100,31 @@ function getTranslationPromise(selectedText, selectedLanguage, selection) {
     translate(selectedText, translationConfiguration)
       .then(res => {
         if (!!res && !!res.data) {
-          resolve(
-            /** @type {TranslateRes} */ {
-              selection,
-              translation: res.data[0]
-            }
-          );
+          // If google rejects the string it will return the same string as input
+          // We can try to split the string into parts, then translate again. Then return it to a
+          // camel style casing
+          if (res.data[0] === selectedText) {
+            translate(humanizeString(selectedText), translationConfiguration)
+              .then(res => {
+                if (!!res && !!res.data) {
+                  resolve(
+                    /** @type {TranslateRes} */ {
+                      selection,
+                      translation: camelcase(res.data[0])
+                    }
+                  );
+                } else {
+                  reject(new Error("Google Translation API issue"));
+                }
+              });
+          } else {
+            resolve(
+              /** @type {TranslateRes} */ {
+                selection,
+                translation: res.data[0]
+              }
+            );
+          }
         } else {
           reject(new Error("Google Translation API issue"));
         }
