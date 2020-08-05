@@ -25,17 +25,10 @@ const recentlyUsed = [];
  * @returns {undefined}
  */
 function updateLanguageList(selectedLanguage) {
-  if (recentlyUsed.find(r => r.value === selectedLanguage.value)) {
+  const index = recentlyUsed.findIndex((r) => r === selectedLanguage);
+  if (index !== -1) {
     // Remove the recently used language from the list
-    const index = recentlyUsed.findIndex(
-      r => r.value === selectedLanguage.value
-    );
     recentlyUsed.splice(index, 1);
-  }
-  if (languages.find(r => r.value === selectedLanguage.value)) {
-    // Remove the recently used language from languages list
-    const index = languages.findIndex(r => r.value === selectedLanguage.value);
-    languages.splice(index, 1);
   }
   // Add the language in recently used languages
   recentlyUsed.splice(0, 0, selectedLanguage);
@@ -89,16 +82,16 @@ function getTranslationPromise(selectedText, selectedLanguage, selection) {
       translationConfiguration.proxy = {
         host,
         port: Number(port),
-      }
+      };
       if (!!username) {
         translationConfiguration.proxy.auth = {
           username,
           password,
-        }
+        };
       }
     }
     translate(selectedText, translationConfiguration)
-      .then(res => {
+      .then((res) => {
         if (!!res && !!res.data) {
           // If google rejects the string it will return the same string as input
           // We can try to split the string into parts, then translate again. Then return it to a
@@ -129,7 +122,7 @@ function getTranslationPromise(selectedText, selectedLanguage, selection) {
           reject(new Error("Google Translation API issue"));
         }
       })
-      .catch(e =>
+      .catch((e) =>
         reject(new Error("Google Translation API issue: " + e.message))
       );
   });
@@ -144,7 +137,7 @@ function getTranslationPromise(selectedText, selectedLanguage, selection) {
  * @returns {Array.<Promise<TranslateRes>>}
  */
 function getTranslationsPromiseArray(selections, document, selectedLanguage) {
-  return selections.map(selection => {
+  return selections.map((selection) => {
     const selectedText = getSelectedText(document, selection);
     return getTranslationPromise(selectedText, selectedLanguage, selection);
   });
@@ -163,21 +156,47 @@ function getTranslationsPromiseArrayLine(
   document,
   selectedLanguage
 ) {
-  return selections.map(selection => {
+  return selections.map((selection) => {
     const selectedLineText = getSelectedLineText(document, selection);
     return getTranslationPromise(selectedLineText, selectedLanguage, selection);
   });
 }
 
 /**
- * Returns user settings Preferred language
- *
- * @returns {string}
+ * Returns user settings Preferred language.
+ * If user hasn't set preferred lang. Prompt to set.
  */
 function getPreferredLanguage() {
-  return vscode.workspace
-    .getConfiguration("vscodeGoogleTranslate")
-    .get("preferredLanguage");
+  return (
+    vscode.workspace
+      .getConfiguration("vscodeGoogleTranslate")
+      .get("preferredLanguage") || setPreferredLanguage()
+  );
+}
+
+function setPreferredLanguage() {
+  const editor = vscode.window.activeTextEditor;
+
+  const quickPickData = recentlyUsed
+    .map((r) => ({
+      label: r,
+      description: "(recently used)",
+    }))
+    .concat(languages.map((r) => ({ label: r.name })));
+
+  return vscode.window.showQuickPick(quickPickData).then((selectedLanguage) => {
+    if (!selectedLanguage) {
+      return;
+    }
+    vscode.workspace
+      .getConfiguration()
+      .update(
+        "vscodeGoogleTranslate.preferredLanguage",
+        selectedLanguage.label,
+        vscode.ConfigurationTarget.Global
+      );
+    return selectedLanguage.label;
+  });
 }
 
 /**
@@ -192,7 +211,7 @@ function getProxyConfig() {
     port: config.get("proxyPort"),
     username: config.get("proxyUsername"),
     password: config.get("proxyPassword"),
-  }
+  };
 }
 
 /**
@@ -202,59 +221,65 @@ function getProxyConfig() {
  * @returns {undefined} There is no an API public surface now (7/3/2019)
  */
 function activate(context) {
-  let translateText = vscode.commands.registerCommand(
+  const translateText = vscode.commands.registerCommand(
     "extension.translateText",
-    function() {
+    function () {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
 
       const quickPickData = recentlyUsed
-        .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+        .map((r) => ({
+          label: r,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map((r) => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          if (!res) return;
-          const selectedLanguage = quickPickData.find(t => t.name === res);
-          updateLanguageList(selectedLanguage);
+        .showQuickPick(quickPickData)
+        .then((selectedLanguage) => {
+          if (!selectedLanguage) return;
+          updateLanguageList(selectedLanguage.label);
           const translationsPromiseArray = getTranslationsPromiseArray(
             selections,
             document,
-            selectedLanguage.value
+            languages.find((r) => r.name === selectedLanguage.label).value
           );
           Promise.all(translationsPromiseArray)
-            .then(function(results) {
-              editor.edit(builder => {
-                results.forEach(r => {
+            .then(function (results) {
+              editor.edit((builder) => {
+                results.forEach((r) => {
                   if (!!r.translation) {
                     builder.replace(r.selection, he.decode(r.translation));
                   }
                 });
               });
             })
-            .catch(e => vscode.window.showErrorMessage(e.message));
+            .catch((e) => vscode.window.showErrorMessage(e.message));
         })
-        .catch(err => {
+        .catch((err) => {
           vscode.window.showErrorMessage(err.message);
         });
     }
   );
   context.subscriptions.push(translateText);
 
-  let translateTextPreferred = vscode.commands.registerCommand(
+  const setPreferredLanguageFnc = vscode.commands.registerCommand(
+    "extension.setPreferredLanguage",
+    setPreferredLanguage
+  );
+  context.subscriptions.push(setPreferredLanguageFnc);
+
+  const translateTextPreferred = vscode.commands.registerCommand(
     "extension.translateTextPreferred",
-    function() {
+    async function () {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
 
       // vscodeTranslate.preferredLanguage
-      let locale = getPreferredLanguage();
+      const preferredLanguage = await getPreferredLanguage();
+      const locale = languages.find(
+        (element) => element.name === preferredLanguage
+      ).value;
       if (!locale) {
         return;
       }
@@ -265,50 +290,47 @@ function activate(context) {
         locale
       );
       Promise.all(translationsPromiseArray)
-        .then(function(results) {
-          editor.edit(builder => {
-            results.forEach(r => {
+        .then(function (results) {
+          editor.edit((builder) => {
+            results.forEach((r) => {
               if (!!r.translation) {
                 builder.replace(r.selection, he.decode(r.translation));
               }
             });
           });
         })
-        .catch(e => vscode.window.showErrorMessage(e.message));
+        .catch((e) => vscode.window.showErrorMessage(e.message));
     }
   );
   context.subscriptions.push(translateTextPreferred);
 
-  let translateLinesUnderCursor = vscode.commands.registerCommand(
+  const translateLinesUnderCursor = vscode.commands.registerCommand(
     "extension.translateLinesUnderCursor",
     function translateLinesUnderCursorcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
 
       const quickPickData = recentlyUsed
-        .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+        .map((r) => ({
+          label: r.name,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map((r) => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          if (!res) return;
-          const selectedLanguage = quickPickData.find(t => t.name === res);
-          updateLanguageList(selectedLanguage);
+        .showQuickPick(quickPickData)
+        .then((selectedLanguage) => {
+          if (!selectedLanguage) return;
+          updateLanguageList(selectedLanguage.label);
           const translationsPromiseArray = getTranslationsPromiseArrayLine(
             selections,
             document,
-            selectedLanguage.value
+            languages.find((r) => r.name === selectedLanguage.label).value
           );
           Promise.all(translationsPromiseArray)
-            .then(function(results) {
-              editor.edit(builder => {
-                results.forEach(r => {
+            .then(function (results) {
+              editor.edit((builder) => {
+                results.forEach((r) => {
                   if (!!r.translation) {
                     const ffix = ["", "\n"];
                     if (
@@ -322,9 +344,9 @@ function activate(context) {
                 });
               });
             })
-            .catch(e => vscode.window.showErrorMessage(e.message));
+            .catch((e) => vscode.window.showErrorMessage(e.message));
         })
-        .catch(err => {
+        .catch((err) => {
           vscode.window.showErrorMessage(err.message);
         });
     }
@@ -332,12 +354,15 @@ function activate(context) {
 
   context.subscriptions.push(translateLinesUnderCursor);
 
-  let translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
+  const translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
     "extension.translateLinesUnderCursorPreferred",
-    function translateLinesUnderCursorPreferredcallback() {
+    async function translateLinesUnderCursorPreferredcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
-      let locale = getPreferredLanguage();
+      const preferredLanguage = await getPreferredLanguage();
+      const locale = languages.find(
+        (element) => element.name === preferredLanguage
+      ).value;
       if (!locale) {
         vscode.window.showWarningMessage(
           "Prefered language is requeried for this feature! Please set this in the settings."
@@ -352,9 +377,9 @@ function activate(context) {
       );
 
       Promise.all(translationsPromiseArray)
-        .then(function(results) {
-          editor.edit(builder => {
-            results.forEach(r => {
+        .then(function (results) {
+          editor.edit((builder) => {
+            results.forEach((r) => {
               if (!!r.translation) {
                 const ffix = ["", "\n"];
                 if (editor.document.lineCount - 1 === r.selection.start.line)
@@ -365,7 +390,7 @@ function activate(context) {
             });
           });
         })
-        .catch(e => vscode.window.showErrorMessage(e.message));
+        .catch((e) => vscode.window.showErrorMessage(e.message));
     }
   );
 
