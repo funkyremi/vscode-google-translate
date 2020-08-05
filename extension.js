@@ -23,17 +23,10 @@ const recentlyUsed = [];
  * @returns {undefined}
  */
 function updateLanguageList(selectedLanguage) {
-  if (recentlyUsed.find(r => r.value === selectedLanguage.value)) {
+  const index = recentlyUsed.findIndex(r => r === selectedLanguage);
+  if (index !== -1) {
     // Remove the recently used language from the list
-    const index = recentlyUsed.findIndex(
-      r => r.value === selectedLanguage.value
-    );
     recentlyUsed.splice(index, 1);
-  }
-  if (languages.find(r => r.value === selectedLanguage.value)) {
-    // Remove the recently used language from languages list
-    const index = languages.findIndex(r => r.value === selectedLanguage.value);
-    languages.splice(index, 1);
   }
   // Add the language in recently used languages
   recentlyUsed.splice(0, 0, selectedLanguage);
@@ -149,14 +142,35 @@ function getTranslationsPromiseArrayLine(
 }
 
 /**
- * Returns user settings Preferred language
- *
- * @returns {string}
+ * Returns user settings Preferred language.
+ * If user hasn't set preferred lang. Prompt to set.
  */
-function getPreferredLanguage() {
+async function getPreferredLanguage() {
   return vscode.workspace
     .getConfiguration("vscodeGoogleTranslate")
-    .get("preferredLanguage");
+    .get("preferredLanguage")
+    || setPreferredLanguage();
+}
+
+function setPreferredLanguage() {
+  const editor = vscode.window.activeTextEditor;
+
+  const quickPickData = recentlyUsed
+    .map(r => ({
+      label: r,
+      description: "(recently used)",
+    }))
+    .concat(languages.map(r => ({ label: r.name })));
+
+  return vscode.window
+    .showQuickPick(quickPickData)
+    .then(selectedLanguage => {
+      if (!selectedLanguage) {
+        return;
+      }
+      vscode.workspace.getConfiguration().update("vscodeGoogleTranslate.preferredLanguage", selectedLanguage.label, vscode.ConfigurationTarget.Global);
+      return selectedLanguage.label;
+    })
 }
 
 /**
@@ -189,23 +203,20 @@ function activate(context) {
 
       const quickPickData = recentlyUsed
         .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+          label: r,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map(r => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          if (!res) return;
-          const selectedLanguage = quickPickData.find(t => t.name === res);
-          updateLanguageList(selectedLanguage);
+        .showQuickPick(quickPickData)
+        .then(selectedLanguage => {
+          if (!selectedLanguage) return;
+          updateLanguageList(selectedLanguage.label);
           const translationsPromiseArray = getTranslationsPromiseArray(
             selections,
             document,
-            selectedLanguage.value
+            languages.find(r => r.name === selectedLanguage.label).value
           );
           Promise.all(translationsPromiseArray)
             .then(function(results) {
@@ -226,14 +237,18 @@ function activate(context) {
   );
   context.subscriptions.push(translateText);
 
+  let setPreferredLanguageFnc = vscode.commands.registerCommand("extension.setPreferredLanguage", setPreferredLanguage);
+  context.subscriptions.push(setPreferredLanguageFnc);
+
   let translateTextPreferred = vscode.commands.registerCommand(
     "extension.translateTextPreferred",
-    function() {
+    async function() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
 
       // vscodeTranslate.preferredLanguage
-      let locale = getPreferredLanguage();
+      let preferredLanguage = await getPreferredLanguage();
+      let locale = languages.find(element => element.name === preferredLanguage).value;
       if (!locale) {
         return;
       }
@@ -266,23 +281,20 @@ function activate(context) {
 
       const quickPickData = recentlyUsed
         .map(r => ({
-          name: r.name.includes("(recently used)")
-            ? r.name
-            : `${r.name} (recently used)`,
-          value: r.value
+          label: r.name,
+          description: "(recently used)",
         }))
-        .concat(languages);
+        .concat(languages.map(r => ({ label: r.name })));
 
       vscode.window
-        .showQuickPick(quickPickData.map(l => l.name))
-        .then(res => {
-          if (!res) return;
-          const selectedLanguage = quickPickData.find(t => t.name === res);
-          updateLanguageList(selectedLanguage);
+        .showQuickPick(quickPickData)
+        .then(selectedLanguage => {
+          if (!selectedLanguage) return;
+          updateLanguageList(selectedLanguage.label);
           const translationsPromiseArray = getTranslationsPromiseArrayLine(
             selections,
             document,
-            selectedLanguage.value
+            languages.find(r => r.name === selectedLanguage.label).value
           );
           Promise.all(translationsPromiseArray)
             .then(function(results) {
@@ -313,10 +325,11 @@ function activate(context) {
 
   let translateLinesUnderCursorPreferred = vscode.commands.registerCommand(
     "extension.translateLinesUnderCursorPreferred",
-    function translateLinesUnderCursorPreferredcallback() {
+    async function translateLinesUnderCursorPreferredcallback() {
       const editor = vscode.window.activeTextEditor;
       const { document, selections } = editor;
-      let locale = getPreferredLanguage();
+      let preferredLanguage = await getPreferredLanguage();
+      let locale = languages.find(element => element.name === preferredLanguage).value;
       if (!locale) {
         vscode.window.showWarningMessage(
           "Prefered language is requeried for this feature! Please set this in the settings."
