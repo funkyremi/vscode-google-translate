@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.7
+- Translate camel case support
+
 ## 1.4.6
 - Improve default language settings
 - Fix default shortcut
