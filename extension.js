@@ -178,8 +178,7 @@ function getPreferredLanguage() {
   );
 }
 
-function setPreferredLanguage() {
-
+async function setPreferredLanguage() {
   const quickPickData = recentlyUsed
     .map((r) => ({
       label: r,
@@ -187,19 +186,18 @@ function setPreferredLanguage() {
     }))
     .concat(languages.map((r) => ({ label: r.name })));
 
-  return vscode.window.showQuickPick(quickPickData).then((selectedLanguage) => {
-    if (!selectedLanguage) {
-      return;
-    }
-    vscode.workspace
-      .getConfiguration()
-      .update(
-        "vscodeGoogleTranslate.preferredLanguage",
-        selectedLanguage.label,
-        vscode.ConfigurationTarget.Global
-      );
-    return selectedLanguage.label;
-  });
+  const selectedLanguage = await vscode.window.showQuickPick(quickPickData);
+  if (!selectedLanguage) {
+    return;
+  }
+  vscode.workspace
+    .getConfiguration()
+    .update(
+      "vscodeGoogleTranslate.preferredLanguage",
+      selectedLanguage.label,
+      vscode.ConfigurationTarget.Global
+    );
+  return selectedLanguage.label;
 }
 
 /**
@@ -223,7 +221,7 @@ function getProxyConfig() {
  * @param {vscode.ExtensionContext} context
  * @returns {undefined} There is no an API public surface now (7/3/2019)
  */
-function activate(context) {
+async function activate(context) {
   const translateText = vscode.commands.registerCommand(
     "extension.translateText",
     function () {
@@ -397,6 +395,11 @@ function activate(context) {
     }
   );
   context.subscriptions.push(translateLinesUnderCursorPreferred);
+
+  // Don't initialize the server if it's not wanted
+  if (!vscode.workspace.getConfiguration("vscodeGoogleTranslate").get("HoverTranslations")) {
+    return;
+  }
 
   // All Below code initializes the Comment Hovering Translation feature
   let serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));

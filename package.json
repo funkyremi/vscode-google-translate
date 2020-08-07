@@ -17,6 +17,7 @@
         "Formatters"
     ],
     "activationEvents": [
+        "*",
         "onCommand:extension.translateText",
         "onCommand:extension.setPreferredLanguage",
         "onCommand:extension.translateTextPreferred",
@@ -161,6 +162,11 @@
                         "Zulu"
                     ],
                     "description": "The preferred target language"
+                },
+                "vscodeGoogleTranslate.HoverTranslations": {
+                    "type": "boolean",
+                    "description": "Check to enable hover translation previews (change requires reload)",
+                    "default": "true"
                 },
                 "vscodeGoogleTranslate.proxyHost": {
                     "type": "string",
