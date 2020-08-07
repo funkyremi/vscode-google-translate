@@ -21,7 +21,6 @@ export class Comment {
     constructor(extensions: ICommentOption, private _documents: TextDocuments, private _connection: Connection) {
         this._setting = { multiLineMerge: false, preferredLanguage: extensions.userLanguage,concise: false};
         this._textMateService = new TextMateService(extensions.grammarExtensions, extensions.appRoot);
-        //关闭文档或内容变更，移除缓存
         _documents.onDidClose(e => this._removeCommentParse(e.document));
         _documents.onDidChangeContent(e => this._removeCommentParse(e.document))
     }
@@ -47,12 +46,7 @@ export class Comment {
             }
           });
     } 
-    /**
-     * Returns user settings proxy config
-     *
-     * @returns {string}
-     */
-
+    
     private async _getSelectionContainPosition(textDocumentPosition: TextDocumentPositionParams): Promise<ICommentBlock> {
         let block = await this._connection.sendRequest<ICommentBlock>('selectionContains', textDocumentPosition);
         return block;
@@ -80,7 +74,7 @@ export class Comment {
         let parse = await this._getCommentParse(textDocument);
         let block = await this._getSelectionContainPosition(textDocumentPosition);
         if (!block) {
-            block = await parse.computeText(textDocumentPosition.position, this._setting.concise);
+            block = parse.computeText(textDocumentPosition.position, this._setting.concise);
         }
         if (block) {
             if (block.humanize) {

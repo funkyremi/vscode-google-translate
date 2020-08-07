@@ -76,10 +76,6 @@ connection.onDidChangeConfiguration(async () => {
 	concise = setting.concise;
 	comment.setSetting(setting);
 });
-// Only keep settings for open documents
-// documents.onDidClose(e => {
-// 	documentSettings.delete(e.document.uri);
-// });
 
 let shortLive = new ShortLive((item: TextDocumentPositionParams, data: TextDocumentPositionParams) => {
 	if (item.textDocument.uri === data.textDocument.uri) {

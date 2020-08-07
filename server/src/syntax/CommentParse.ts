@@ -1,6 +1,6 @@
 import { TextDocument, Position, Range } from "vscode-languageserver";
 import { IGrammar, StackElement, IToken, IGrammarExtensions } from "./TextMateService";
-import { isUpperCase, hasEndMark, isLowerCase } from "../util/string";
+
 export interface ITokenState {
     startState: StackElement | null;
     tokens1: IToken[];
@@ -29,13 +29,12 @@ export class CommentParse {
         this._model = textDocument.getText().split('\n');
     }
 
-    //跨行元素合并
     private _mergeComment(oldComment: string, newLine: string): string {
         if (this._multiLineMerge) {
             let lastLine = oldComment.substring(oldComment.lastIndexOf('\n') + 1);
             lastLine = lastLine.replace(/^([\/\ \*])*/, '');
             let currentLine: string = newLine.replace(/^([\/\ \*])*/, '');
-            if (isUpperCase(lastLine) && hasEndMark(lastLine) && isLowerCase(currentLine)) {
+            if ((lastLine >= 'A' && lastLine <= 'Z') && (lastLine.substring(lastLine.length - 1) !== '.') && (currentLine >= 'a' && currentLine <= 'z')) {
                 return oldComment + ' ' + currentLine;
             }
         }
@@ -48,7 +47,6 @@ export class CommentParse {
         if (lineLength) {
             state = this._lines[lineLength - 1].endState;
         }
-        //重编译过的地方
         for (let i = lineLength; i <= lineNumber; i++) {
             let tokenizationResult = this._grammar.tokenizeLine(this._model[i], state);
             this._lines.push({
@@ -91,7 +89,6 @@ export class CommentParse {
 
         let startLine = positionLine;
         let endLine = positionLine;
-        //合并当前坐标之前的相连同类节点 before
         for (let line = positionLine, tokens1 = dataTokens1, tokenIndex = token1Index; line >= minLine;) {
             let index;
             for (index = tokenIndex - 1; index >= 0; index -= 1) {
@@ -118,7 +115,6 @@ export class CommentParse {
                 tokenText = '\n' + tokenText;
             }
         }
-        //合并当前坐标之后的相连同类节点 after
         for (let line = positionLine, tokens1 = dataTokens1, tokenIndex = token1Index; line <= maxLine;) {
             let index;
             for (index = tokenIndex + 1; index < tokens1.length; index += 1) {
@@ -167,7 +163,6 @@ export class CommentParse {
 
     public computeText(position: Position, fullToken = false): ICommentBlock | null {
         function isCommentTranslate(scopes: string[]) {
-            //评论的token标记
             let arr = [
                 'punctuation.definition.comment',
                 'comment.block',
@@ -187,7 +182,6 @@ export class CommentParse {
 
         function isStringTranslate(scopes: string[]) {
             let scope = scopes[0];
-            //字符串和转义字符的token标记
             let arr = [
                 'string.quoted',
                 'constant.character.escape'
@@ -204,7 +198,6 @@ export class CommentParse {
                 'entity',
                 'variable',
                 'support',
-                // Object表达式支持
                 'meta.object-literal.key'
             ];
 
@@ -215,7 +208,6 @@ export class CommentParse {
 
         let data = this._getTokensAtLine(position.line);
         let token1Index = 0;
-        //定位起始位置标记
         for (let i = data.tokens1.length - 1; i >= 0; i--) {
             let t = data.tokens1[i];
             if (position.character - 1 >= t.startIndex) {
@@ -225,7 +217,6 @@ export class CommentParse {
         }
 
         let { tokenStartIndex, tokenEndIndex, tokenText, scopes } = this._parseScopesText(data.tokens1, position.line, token1Index);
-        //字符串中包含 \n 等， 需要在当前行，合并连续token
         if (scopes && isStringTranslate(scopes)) {
             return this.multiScope({
                 positionLine: position.line,
@@ -234,7 +225,6 @@ export class CommentParse {
             }, isStringTranslate, position.line, position.line);
         }
 
-        //评论会跨越多行，需要在多行中合并连续评论token
         if (scopes && isCommentTranslate(scopes)) {
             return this.multiScope({
                 positionLine: position.line,
@@ -243,7 +233,6 @@ export class CommentParse {
             }, isCommentTranslate, this._model.length - 1, 0, skipCommentTranslate);
         }
 
-        //基础变量，只需要1个token
         if (scopes && (fullToken || isBaseTranslate(scopes))) {
             let range = Range.create({
                 line: position.line,
