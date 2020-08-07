@@ -479,5 +479,10 @@ exports.activate = activate;
  * @param {vscode.ExtensionContext} context
  * @returns {undefined} There is no an API public surface now (7/3/2019)
  */
-function deactivate() {}
+function deactivate() {
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
+}
 exports.deactivate = deactivate;
