@@ -398,7 +398,7 @@ function activate(context) {
   );
   context.subscriptions.push(translateLinesUnderCursorPreferred);
 
-  // The server is implemented in node
+  // All Below code initializes the Comment Hovering Translation feature
   let serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
   // The debug options for the server
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
@@ -453,7 +453,6 @@ function activate(context) {
   client.onRequest('selectionContains', (textDocumentPosition) => {
       let editor = vscode.window.activeTextEditor;
       if (editor && editor.document.uri.toString() === textDocumentPosition.textDocument.uri) {
-          //类型转换
           let position = new vscode.Position(textDocumentPosition.position.line, textDocumentPosition.position.character);
           let selection = editor.selections.find((selection) => {
               return !selection.isEmpty && selection.contains(position);
