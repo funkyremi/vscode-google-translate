@@ -161,7 +161,7 @@ export class CommentParse {
 
     }
 
-    public computeText(position: Position, fullToken = false): ICommentBlock | null {
+    public computeText(position: Position): ICommentBlock | null {
         function isCommentTranslate(scopes: string[]) {
             let arr = [
                 'punctuation.definition.comment',
@@ -233,7 +233,7 @@ export class CommentParse {
             }, isCommentTranslate, this._model.length - 1, 0, skipCommentTranslate);
         }
 
-        if (scopes && (fullToken || isBaseTranslate(scopes))) {
+        if (scopes && isBaseTranslate(scopes)) {
             let range = Range.create({
                 line: position.line,
                 character: tokenStartIndex

@@ -22,7 +22,6 @@ import { ShortLive } from './util/short-live';
 // Also include all preview / proposed LSP features.
 let connection = createConnection(ProposedFeatures.all);
 
-
 // Create a simple text document manager. The text document manager
 // supports full document sync only
 let documents: TextDocuments = new TextDocuments();
@@ -30,7 +29,6 @@ let documents: TextDocuments = new TextDocuments();
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
 let comment: Comment;
-let concise = false;
 
 connection.onInitialize((params: InitializeParams) => {
 	let capabilities = params.capabilities;
@@ -38,10 +36,8 @@ connection.onInitialize((params: InitializeParams) => {
 	patchAsarRequire(params.initializationOptions.appRoot);
 	// Does the client support the `workspace/configuration` request?
 	// If not, we will fall back using global settings
-	hasConfigurationCapability =
-		capabilities.workspace && !!capabilities.workspace.configuration;
-	hasWorkspaceFolderCapability =
-		capabilities.workspace && !!capabilities.workspace.workspaceFolders;
+	hasConfigurationCapability = capabilities.workspace && !!capabilities.workspace.configuration;
+	hasWorkspaceFolderCapability = capabilities.workspace && !!capabilities.workspace.workspaceFolders;
 
 	return {
 		capabilities: {
@@ -67,14 +63,12 @@ connection.onInitialized(async () => {
 	}
 
 	let setting = await connection.workspace.getConfiguration('vscodeGoogleTranslate');
-	concise = setting.concise;
 	comment.setSetting(setting);
 });
-// The example settings
+
+// The settings are pulled from the main JS extension
 connection.onDidChangeConfiguration(async () => {
-	let setting = await connection.workspace.getConfiguration('vscodeGoogleTranslate');
-	concise = setting.concise;
-	comment.setSetting(setting);
+	comment.setSetting(await connection.workspace.getConfiguration('vscodeGoogleTranslate'));
 });
 
 let shortLive = new ShortLive((item: TextDocumentPositionParams, data: TextDocumentPositionParams) => {
@@ -83,12 +77,11 @@ let shortLive = new ShortLive((item: TextDocumentPositionParams, data: TextDocum
 	}
 	return false;
 });
-// The content of a text document has changed. This event is emitted
-// when the text document first opened or when its content has changed.
+
 let last: Map<string, Hover> = new Map();
+
 connection.onHover(async (textDocumentPosition) => {
 	if (!comment) return null;
-	if (concise && !shortLive.isLive(textDocumentPosition)) return null;
 	let hover = await comment.getComment(textDocumentPosition);
 	hover && last.set(textDocumentPosition.textDocument.uri, hover);
 	return hover;
@@ -96,7 +89,6 @@ connection.onHover(async (textDocumentPosition) => {
 
 connection.onDefinition(async (definitionParams) => {
 	shortLive.add(definitionParams);
-
 	return null;
 });
 

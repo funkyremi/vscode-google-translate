@@ -8,7 +8,6 @@ import * as languages from "../../languages"
 
 export interface ICommentTranslateSettings {
     multiLineMerge: boolean;
-    concise: boolean;
     preferredLanguage: string;
 }
 
@@ -19,7 +18,7 @@ export class Comment {
     private _commentParseCache: Map<string, CommentParse> = new Map();
 
     constructor(extensions: ICommentOption, private _documents: TextDocuments, private _connection: Connection) {
-        this._setting = { multiLineMerge: false, preferredLanguage: extensions.userLanguage,concise: false};
+        this._setting = { multiLineMerge: false, preferredLanguage: extensions.userLanguage };
         this._textMateService = new TextMateService(extensions.grammarExtensions, extensions.appRoot);
         _documents.onDidClose(e => this._removeCommentParse(e.document));
         _documents.onDidChangeContent(e => this._removeCommentParse(e.document))
@@ -74,7 +73,7 @@ export class Comment {
         let parse = await this._getCommentParse(textDocument);
         let block = await this._getSelectionContainPosition(textDocumentPosition);
         if (!block) {
-            block = parse.computeText(textDocumentPosition.position, this._setting.concise);
+            block = parse.computeText(textDocumentPosition.position);
         }
         if (block) {
             if (block.humanize) {
