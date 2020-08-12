@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.8
+- Show's translations when hovering over code and text
+
 ## 1.4.7
 - Translate camel case support
 

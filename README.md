@@ -28,6 +28,12 @@ This feature inserts a newline under the current one with translation
 Want to quickly translate into a specific language?
 Run Command 'Set Preferred Language' or Set it in VSCode extension settings
 
+## Tooltip Hover Translation
+
+By default when you hover over comments and code, you will get a translation into
+your preferred language hovering above the element. If you want to turn this off
+go into extension settings and un-check HoverTranslations then restart VSCode.
+
 ## Proxy Support
 
 You can use a proxy to translate text with the following settings:
@@ -42,6 +48,9 @@ You can use a proxy to translate text with the following settings:
 ## Pull request
 
 Pull request are welcome. Fork the project, clone it, install dependencies `npm i` and start coding :-).
+
+If you want to make changes to the code hovering translations. Please run "npm run compile" from the root in order to compile the typescript
+part of the codebase.
 
 ## Give five stars 🤩
 
