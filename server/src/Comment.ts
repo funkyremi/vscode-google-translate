@@ -34,7 +34,7 @@ export class Comment {
     }
 
     async translate(text: string) {
-        let translationConfiguration = {
+        const translationConfiguration = {
             to: this._setting.preferredLanguage,
         };
         return await translate(text, translationConfiguration).then(res => {
@@ -47,49 +47,45 @@ export class Comment {
     } 
     
     private async _getSelectionContainPosition(textDocumentPosition: TextDocumentPositionParams): Promise<ICommentBlock> {
-        let block = await this._connection.sendRequest<ICommentBlock>('selectionContains', textDocumentPosition);
-        return block;
+        return await this._connection.sendRequest<ICommentBlock>('selectionContains', textDocumentPosition);
     }
 
     _removeCommentParse(textDocument: TextDocument) {
-        let key = `${textDocument.languageId}-${textDocument.uri}`;
+        const key = `${textDocument.languageId}-${textDocument.uri}`;
         this._commentParseCache.delete(key);
     }
 
     async _getCommentParse(textDocument: TextDocument) {
-        let key = `${textDocument.languageId}-${textDocument.uri}`;
+        const key = `${textDocument.languageId}-${textDocument.uri}`;
         if (this._commentParseCache.has(key)) {
             return this._commentParseCache.get(key);
         }
-        let grammar = await this._textMateService.createGrammar(textDocument.languageId);
-        let parse: CommentParse = new CommentParse(textDocument, grammar, this._setting.multiLineMerge);
+        const grammar = await this._textMateService.createGrammar(textDocument.languageId);
+        const parse: CommentParse = new CommentParse(textDocument, grammar, this._setting.multiLineMerge);
         this._commentParseCache.set(key, parse);
         return parse;
     }
 
     async getComment(textDocumentPosition: TextDocumentPositionParams): Promise<Hover> {
-        let textDocument = this._documents.get(textDocumentPosition.textDocument.uri);
+        const textDocument = this._documents.get(textDocumentPosition.textDocument.uri);
         if (!textDocument) return null;
-        let parse = await this._getCommentParse(textDocument);
-        let block = await this._getSelectionContainPosition(textDocumentPosition);
-        if (!block) {
-            block = parse.computeText(textDocumentPosition.position);
-        }
+
+        const parse = await this._getCommentParse(textDocument);
+        const block = await this._getSelectionContainPosition(textDocumentPosition) || parse.computeText(textDocumentPosition.position);
         if (block) {
             if (block.humanize) {
-                let humanize = humanizeString(block.comment);
-                let targetLanguageComment = await this.translate(humanize);
+                const humanize = humanizeString(block.comment);
+                const targetLanguageComment = await this.translate(humanize);
                 return {
                     contents: [humanize + ' => ' + targetLanguageComment], range: block.range
                 };
             } else {
-                let targetLanguageComment = await this.translate(block.comment);
+                const targetLanguageComment = await this.translate(block.comment);
                 return {
                     contents: [targetLanguageComment],
                     range: block.range
                 };
             }
-
         }
         return null;
     }

@@ -20,18 +20,18 @@ import { ShortLive } from './util/short-live';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
-let connection = createConnection(ProposedFeatures.all);
+const connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager. The text document manager
 // supports full document sync only
-let documents: TextDocuments = new TextDocuments();
+const documents: TextDocuments = new TextDocuments();
 
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
 let comment: Comment;
 
 connection.onInitialize((params: InitializeParams) => {
-	let capabilities = params.capabilities;
+	const capabilities = params.capabilities;
 	comment = new Comment(params.initializationOptions, documents, connection);
 	patchAsarRequire(params.initializationOptions.appRoot);
 	// Does the client support the `workspace/configuration` request?
@@ -62,8 +62,7 @@ connection.onInitialized(async () => {
 		});
 	}
 
-	let setting = await connection.workspace.getConfiguration('vscodeGoogleTranslate');
-	comment.setSetting(setting);
+	comment.setSetting(await connection.workspace.getConfiguration('vscodeGoogleTranslate'));
 });
 
 // The settings are pulled from the main JS extension
@@ -71,18 +70,18 @@ connection.onDidChangeConfiguration(async () => {
 	comment.setSetting(await connection.workspace.getConfiguration('vscodeGoogleTranslate'));
 });
 
-let shortLive = new ShortLive((item: TextDocumentPositionParams, data: TextDocumentPositionParams) => {
+const shortLive = new ShortLive((item: TextDocumentPositionParams, data: TextDocumentPositionParams) => {
 	if (item.textDocument.uri === data.textDocument.uri) {
 		return true;
 	}
 	return false;
 });
 
-let last: Map<string, Hover> = new Map();
+const last: Map<string, Hover> = new Map();
 
 connection.onHover(async (textDocumentPosition) => {
 	if (!comment) return null;
-	let hover = await comment.getComment(textDocumentPosition);
+	const hover = await comment.getComment(textDocumentPosition);
 	hover && last.set(textDocumentPosition.textDocument.uri, hover);
 	return hover;
 });

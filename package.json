@@ -190,7 +190,7 @@
         ]
     },
     "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install && cd server && npm install",
+        "postinstall": "node ./node_modules/vscode/bin/install && cd server && npm install && tsc -p .",
         "compile": "tsc -p server",
         "test": "node ./node_modules/vscode/bin/test"
     },
