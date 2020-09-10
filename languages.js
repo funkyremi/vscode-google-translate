@@ -103,7 +103,7 @@ const languages = [
 		value: 'haw',
 	}, {
 		name: 'Hebrew',
-		value: 'he',
+		value: 'iw',
 	}, {
 		name: 'Hindi',
 		value: 'hi',
