@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.9
+- Fix Hebrew language
+
 ## 1.4.8
 - Show's translations when hovering over code and text
 
