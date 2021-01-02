@@ -1,6 +1,34 @@
 const vscode = require("vscode");
 const languages = require("./languages.js");
-const translate = require("google-translate-open-api").default;
+// const translate = require("google-translate-open-api").default;
+const gti = require("google-translate-api");
+
+// Manual bridge between two libraries
+function translate(text, options) {
+  const gotopts = {};
+  if (options && options.proxy) {
+    const proxy = {
+     host: options.proxy.host,
+     port: options.proxy.port,
+     headers: {
+          "User-Agent": "Node",
+        },
+    };
+    if(options.proxy.auth)
+    {
+      proxy.proxyAuth = `${options.proxy.auth.username}:${options.proxy.auth.password}`
+    }
+
+    gotopts.agent = tunnel.httpsOverHttp({
+      proxy: proxy
+    });
+  }
+  return gti(text, options, gotopts).then((res) => {
+    res.data = [res.text];
+    return res;
+  });
+}
+
 const he = require("he");
 const path = require('path');
 const vscodeLanguageClient = require('vscode-languageclient');
