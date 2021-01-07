@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.11
+- Exclude extra files from release
+
 ## 1.4.10
 - Hotfix for 403 error
 
