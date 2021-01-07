@@ -1,9 +1,36 @@
 const vscode = require("vscode");
 const languages = require("./languages.js");
-const translate = require("google-translate-open-api").default;
+const gti = require("google-translate-api");
+const tunnel = require('tunnel');
+
+// Manual bridge between two libraries
+function translate(text, options) {
+  const gotopts = {};
+  if (options && options.proxy) {
+    const proxy = {
+      host: options.proxy.host,
+      port: options.proxy.port,
+      headers: {
+        "User-Agent": "Node",
+      },
+    };
+    if (options.proxy.auth) {
+      proxy.proxyAuth = `${options.proxy.auth.username}:${options.proxy.auth.password}`;
+    }
+
+    gotopts.agent = tunnel.httpsOverHttp({
+      proxy: proxy,
+    });
+  }
+  return gti(text, options, gotopts).then((res) => {
+    res.data = [res.text];
+    return res;
+  });
+}
+
 const he = require("he");
-const path = require('path');
-const vscodeLanguageClient = require('vscode-languageclient');
+const path = require("path");
+const vscodeLanguageClient = require("vscode-languageclient");
 const humanizeString = require("humanize-string");
 const camelcase = require("camelcase");
 
@@ -101,24 +128,26 @@ function getTranslationPromise(selectedText, selectedLanguage, selection) {
           // We can try to split the string into parts, then translate again. Then return it to a
           // camel style casing
           if (res.data[0] === selectedText) {
-            translate(humanizeString(selectedText), translationConfiguration)
-              .then(res => {
-                if (!!res && !!res.data) {
-                  resolve(
-                    /** @type {TranslateRes} */ {
-                      selection,
-                      translation: camelcase(res.data[0])
-                    }
-                  );
-                } else {
-                  reject(new Error("Google Translation API issue"));
-                }
-              });
+            translate(
+              humanizeString(selectedText),
+              translationConfiguration
+            ).then((res) => {
+              if (!!res && !!res.data) {
+                resolve(
+                  /** @type {TranslateRes} */ {
+                    selection,
+                    translation: camelcase(res.data[0]),
+                  }
+                );
+              } else {
+                reject(new Error("Google Translation API issue"));
+              }
+            });
           } else {
             resolve(
               /** @type {TranslateRes} */ {
                 selection,
-                translation: res.data[0]
+                translation: res.data[0],
               }
             );
           }
@@ -397,77 +426,114 @@ async function activate(context) {
   context.subscriptions.push(translateLinesUnderCursorPreferred);
 
   // Don't initialize the server if it's not wanted
-  if (!vscode.workspace.getConfiguration("vscodeGoogleTranslate").get("HoverTranslations")) {
+  if (
+    !vscode.workspace
+      .getConfiguration("vscodeGoogleTranslate")
+      .get("HoverTranslations")
+  ) {
     return;
   }
 
   // All Below code initializes the Comment Hovering Translation feature
-  let serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
+  let serverModule = context.asAbsolutePath(
+    path.join("server", "out", "server.js")
+  );
   // The debug options for the server
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
-  let debugOptions = { execArgv: ['--nolazy', '--inspect=16009'] };
+  let debugOptions = { execArgv: ["--nolazy", "--inspect=16009"] };
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions = {
-      run: { module: serverModule, transport: vscodeLanguageClient.TransportKind.ipc },
-      debug: {
-          module: serverModule,
-          transport: vscodeLanguageClient.TransportKind.ipc,
-          options: debugOptions
-      }
+    run: {
+      module: serverModule,
+      transport: vscodeLanguageClient.TransportKind.ipc,
+    },
+    debug: {
+      module: serverModule,
+      transport: vscodeLanguageClient.TransportKind.ipc,
+      options: debugOptions,
+    },
   };
   let extAll = vscode.extensions.all;
   let languageId = 2;
   let grammarExtensions = [];
   let canLanguages = [];
-  extAll.forEach(extension => {
-      if (!(extension.packageJSON.contributes && extension.packageJSON.contributes.grammars))
-          return;
-      let languages = [];
-      (extension.packageJSON.contributes && extension.packageJSON.contributes.languages || []).forEach((language) => {
-          languages.push({
-              id: languageId++,
-              name: language.id
-          });
+  extAll.forEach((extension) => {
+    if (
+      !(
+        extension.packageJSON.contributes &&
+        extension.packageJSON.contributes.grammars
+      )
+    )
+      return;
+    let languages = [];
+    (
+      (extension.packageJSON.contributes &&
+        extension.packageJSON.contributes.languages) ||
+      []
+    ).forEach((language) => {
+      languages.push({
+        id: languageId++,
+        name: language.id,
       });
-      grammarExtensions.push({
-          languages: languages,
-          value: extension.packageJSON.contributes && extension.packageJSON.contributes.grammars,
-          extensionLocation: extension.extensionPath
-      });
-      canLanguages = canLanguages.concat(extension.packageJSON.contributes.grammars.map((g) => g.language));
+    });
+    grammarExtensions.push({
+      languages: languages,
+      value:
+        extension.packageJSON.contributes &&
+        extension.packageJSON.contributes.grammars,
+      extensionLocation: extension.extensionPath,
+    });
+    canLanguages = canLanguages.concat(
+      extension.packageJSON.contributes.grammars.map((g) => g.language)
+    );
   });
-  let BlackLanguage = ['log', 'Log'];
+  let BlackLanguage = ["log", "Log"];
   let userLanguage = vscode.env.language;
   // Options to control the language client
   let clientOptions = {
-      // Register the server for plain text documents
-      revealOutputChannelOn: 4,
-      initializationOptions: {
-          grammarExtensions, appRoot: vscode.env.appRoot, userLanguage
-      },
-      documentSelector: canLanguages.filter(v => v).filter((v) => BlackLanguage.indexOf(v) < 0),
+    // Register the server for plain text documents
+    revealOutputChannelOn: 4,
+    initializationOptions: {
+      grammarExtensions,
+      appRoot: vscode.env.appRoot,
+      userLanguage,
+    },
+    documentSelector: canLanguages
+      .filter((v) => v)
+      .filter((v) => BlackLanguage.indexOf(v) < 0),
   };
   // Create the language client and start the client.
-  client = new vscodeLanguageClient.LanguageClient('CommentTranslate', 'Comment Translate', serverOptions, clientOptions);
+  client = new vscodeLanguageClient.LanguageClient(
+    "CommentTranslate",
+    "Comment Translate",
+    serverOptions,
+    clientOptions
+  );
   // Start the client. This will also launch the server
   client.start();
   await client.onReady();
-  client.onRequest('selectionContains', (textDocumentPosition) => {
-      let editor = vscode.window.activeTextEditor;
-      if (editor && editor.document.uri.toString() === textDocumentPosition.textDocument.uri) {
-          let position = new vscode.Position(textDocumentPosition.position.line, textDocumentPosition.position.character);
-          let selection = editor.selections.find((selection) => {
-              return !selection.isEmpty && selection.contains(position);
-          });
-          if (selection) {
-              return {
-                  range: selection,
-                  comment: editor.document.getText(selection)
-              };
-          }
+  client.onRequest("selectionContains", (textDocumentPosition) => {
+    let editor = vscode.window.activeTextEditor;
+    if (
+      editor &&
+      editor.document.uri.toString() === textDocumentPosition.textDocument.uri
+    ) {
+      let position = new vscode.Position(
+        textDocumentPosition.position.line,
+        textDocumentPosition.position.character
+      );
+      let selection = editor.selections.find((selection) => {
+        return !selection.isEmpty && selection.contains(position);
+      });
+      if (selection) {
+        return {
+          range: selection,
+          comment: editor.document.getText(selection),
+        };
       }
-      return null;
+    }
+    return null;
   });
 }
 exports.activate = activate;
