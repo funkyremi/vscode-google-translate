@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.10
+- Hotfix for 403 error
+
 ## 1.4.9
 - Fix Hebrew language
 

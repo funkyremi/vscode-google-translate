@@ -52,6 +52,17 @@ Pull request are welcome. Fork the project, clone it, install dependencies `npm 
 If you want to make changes to the code hovering translations. Please run "npm run compile" from the root in order to compile the typescript
 part of the codebase.
 
-## Give five stars 🤩
+Many thanks to the people who participate for making it awesome!
+
+## Show your support
+
+* Give five stars 🤩
 
 If you like it, [rate it](https://marketplace.visualstudio.com/items?itemName=funkyremi.vscode-google-translate&ssr=false#review-details)
+
+* Send Bitcoins / Ether 💸
+
+I develop this extension during my free time and any participation will be appreciated 😊
+
+BTC `163SLzL4NCG5uM4VzffCVJzM3SzyGu9gEq`
+ETH `0xFE04170034B5838Ce9FA7b9569C0E6bf07DFd7e0`
