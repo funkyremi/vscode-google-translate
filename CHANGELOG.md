@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.12
+- Put back the mandatory modules
+
 ## 1.4.11
 - Exclude extra files from release
 

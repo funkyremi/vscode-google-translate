@@ -53,7 +53,6 @@ If you want to make changes to the code hovering translations. Please run "npm r
 part of the codebase.
 
 Many thanks to the people who participate for making it awesome!
-
 ## Show your support
 
 **Give five stars 🤩**
