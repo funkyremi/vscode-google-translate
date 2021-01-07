@@ -202,13 +202,14 @@
     },
     "dependencies": {
         "@types/vscode": "^1.47.0",
-        "tsc": "^1.20150623.0",
-        "typescript": "^3.9.7",
-        "vscode-languageclient": "^6.1.3",
         "camelcase": "^6.0.0",
-        "humanize-string": "^2.1.0",
+        "google-translate-api": "git://github.com/vkedwardli/google-translate-api#2e8cd6baed2a169a7f3f70bcb20ceaf7a5532fe2",
         "google-translate-open-api": "^1.3.5",
         "he": "^1.2.0",
-        "google-translate-api": "git://github.com/vkedwardli/google-translate-api#2e8cd6baed2a169a7f3f70bcb20ceaf7a5532fe2"
+        "humanize-string": "^2.1.0",
+        "tsc": "^1.20150623.0",
+        "tunnel": "0.0.6",
+        "typescript": "^3.9.7",
+        "vscode-languageclient": "^6.1.3"
     }
 }
