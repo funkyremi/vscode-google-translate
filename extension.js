@@ -1,38 +1,11 @@
 const vscode = require("vscode");
 const languages = require("./languages.js");
-const gti = require("google-translate-api");
-const tunnel = require('tunnel');
-
-// Manual bridge between two libraries
-function translate(text, options) {
-  const gotopts = {};
-  if (options && options.proxy) {
-    const proxy = {
-      host: options.proxy.host,
-      port: options.proxy.port,
-      headers: {
-        "User-Agent": "Node",
-      },
-    };
-    if (options.proxy.auth) {
-      proxy.proxyAuth = `${options.proxy.auth.username}:${options.proxy.auth.password}`;
-    }
-
-    gotopts.agent = tunnel.httpsOverHttp({
-      proxy: proxy,
-    });
-  }
-  return gti(text, options, gotopts).then((res) => {
-    res.data = [res.text];
-    return res;
-  });
-}
-
 const he = require("he");
 const path = require("path");
 const vscodeLanguageClient = require("vscode-languageclient");
 const humanizeString = require("humanize-string");
 const camelcase = require("camelcase");
+const translate = require("./translator").translate;
 
 /**
  * @typedef TranslateRes
@@ -436,7 +409,7 @@ async function activate(context) {
 
   // All Below code initializes the Comment Hovering Translation feature
   let serverModule = context.asAbsolutePath(
-    path.join("server", "out", "server.js")
+    path.join("server", "out", "server","src", "server.js")
   );
   // The debug options for the server
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging

@@ -2,8 +2,8 @@ import { TextDocumentPositionParams, Hover, TextDocuments, Connection, TextDocum
 import * as humanizeString from 'humanize-string';
 import { CommentParse, ICommentOption, ICommentBlock } from "./syntax/CommentParse";
 import { TextMateService } from "./syntax/TextMateService";
-import translate from "google-translate-open-api";
-import * as languages from "../../languages"
+import { translate } from "../../translator";
+import languages = require( "../../languages")
 
 
 export interface ICommentTranslateSettings {

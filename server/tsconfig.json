@@ -4,9 +4,10 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"sourceMap": true,
+		"rootDir": "./../",
 		"outDir": "out",
-		"rootDir": "src",
-		"lib": [ "es6" ]
+		"lib": [ "es6" ],
+		"allowJs": true
 	},
 	"include": [
 		"src"
