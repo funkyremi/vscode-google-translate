@@ -1,9 +1,13 @@
 const vscode = require("vscode");
 const languages = require("./languages.js");
-const gti = require("google-translate-api");
+const gti = require("@vitalets/google-translate-api");
 const tunnel = require('tunnel');
+const he = require("he");
+const path = require("path");
+const vscodeLanguageClient = require("vscode-languageclient");
+const humanizeString = require("humanize-string");
+const camelcase = require("camelcase");
 
-// Manual bridge between two libraries
 function translate(text, options) {
   const gotopts = {};
   if (options && options.proxy) {
@@ -27,12 +31,6 @@ function translate(text, options) {
     return res;
   });
 }
-
-const he = require("he");
-const path = require("path");
-const vscodeLanguageClient = require("vscode-languageclient");
-const humanizeString = require("humanize-string");
-const camelcase = require("camelcase");
 
 /**
  * @typedef TranslateRes

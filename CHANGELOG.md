@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.13
+- Update translation dependencies
+
 ## 1.4.12
 - Put back the mandatory modules
 
