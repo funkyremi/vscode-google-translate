@@ -243,79 +243,29 @@ function getProxyConfig() {
 }
 
 /**
- * Platform binding function
- *
- * @param {vscode.ExtensionContext} context
- * @returns {undefined} There is no an API public surface now (7/3/2019)
+ * 
+ * @param {vscode.Range} ranges, eg document selections
  */
-async function activate(context) {
-  const translateText = vscode.commands.registerCommand(
-    "extension.translateText",
-    function () {
-      const editor = vscode.window.activeTextEditor;
-      const { document, selections } = editor;
+function translateRanges (ranges) {
+  const editor = vscode.window.activeTextEditor;
+  const { document } = editor;
 
-      const quickPickData = recentlyUsed
-        .map((r) => ({
-          label: r,
-          description: "(recently used)",
-        }))
-        .concat(languages.map((r) => ({ label: r.name })));
+  const quickPickData = recentlyUsed
+    .map((r) => ({
+      label: r,
+      description: "(recently used)",
+    }))
+    .concat(languages.map((r) => ({ label: r.name })));
 
-      vscode.window
-        .showQuickPick(quickPickData)
-        .then((selectedLanguage) => {
-          if (!selectedLanguage) return;
-          updateLanguageList(selectedLanguage.label);
-          const translationsPromiseArray = getTranslationsPromiseArray(
-            selections,
-            document,
-            languages.find((r) => r.name === selectedLanguage.label).value
-          );
-          Promise.all(translationsPromiseArray)
-            .then(function (results) {
-              editor.edit((builder) => {
-                results.forEach((r) => {
-                  if (!!r.translation) {
-                    builder.replace(r.selection, he.decode(r.translation));
-                  }
-                });
-              });
-            })
-            .catch((e) => vscode.window.showErrorMessage(e.message));
-        })
-        .catch((err) => {
-          vscode.window.showErrorMessage(err.message);
-        });
-    }
-  );
-  context.subscriptions.push(translateText);
-
-  const setPreferredLanguageFnc = vscode.commands.registerCommand(
-    "extension.setPreferredLanguage",
-    setPreferredLanguage
-  );
-  context.subscriptions.push(setPreferredLanguageFnc);
-
-  const translateTextPreferred = vscode.commands.registerCommand(
-    "extension.translateTextPreferred",
-    async function () {
-      const editor = vscode.window.activeTextEditor;
-      const { document, selections } = editor;
-
-      // vscodeTranslate.preferredLanguage
-      const preferredLanguage = await getPreferredLanguage();
-      const locale = languages.find(
-        (element) => element.name === preferredLanguage
-      ).value;
-      if (!locale) {
-        return;
-      }
-
+  vscode.window
+    .showQuickPick(quickPickData)
+    .then((selectedLanguage) => {
+      if (!selectedLanguage) return;
+      updateLanguageList(selectedLanguage.label);
       const translationsPromiseArray = getTranslationsPromiseArray(
-        selections,
+        ranges,
         document,
-        locale
+        languages.find((r) => r.name === selectedLanguage.label).value
       );
       Promise.all(translationsPromiseArray)
         .then(function (results) {
@@ -328,6 +278,116 @@ async function activate(context) {
           });
         })
         .catch((e) => vscode.window.showErrorMessage(e.message));
+    })
+    .catch((err) => {
+      vscode.window.showErrorMessage(err.message);
+    });
+}
+
+async function translateRangesToPreferredLanguage (ranges) {
+  const editor = vscode.window.activeTextEditor;
+  const { document } = editor;
+
+  // vscodeTranslate.preferredLanguage
+  const preferredLanguage = await getPreferredLanguage();
+  const locale = languages.find(
+    (element) => element.name === preferredLanguage
+  ).value;
+
+  if (!locale) {
+    return;
+  }
+
+  const translationsPromiseArray = getTranslationsPromiseArray(
+    ranges,
+    document,
+    locale
+  );
+
+  Promise.all(translationsPromiseArray)
+    .then(function (results) {
+      editor.edit((builder) => {
+        results.forEach((r) => {
+          if (!!r.translation) {
+            builder.replace(r.selection, he.decode(r.translation));
+          }
+        });
+      });
+    })
+    .catch((e) => vscode.window.showErrorMessage(e.message));
+}
+
+function grabRangesUsingRegExp () {
+    
+  const editor = vscode.window.activeTextEditor;
+  const { document } = editor;
+  const config = vscode.workspace.getConfiguration("vscodeGoogleTranslate");
+
+  const regularExpression = new RegExp(config.get("translateFileRegExp"), "gm");
+  const documentText = document.getText();
+
+  const ranges = []
+  while (true) {
+    const match = regularExpression.exec(documentText);
+    if (!match) {
+      break;
+    }
+
+    const matchedText = match[0].replace(/^\n+/, '');
+    const matchedGroupText = match[1];
+    
+    const lineIndex = documentText.substring(0, match.index).split("\n").length - 1;
+    const startColumnIndex = matchedText.indexOf(matchedGroupText);
+    const endColumnIndex = startColumnIndex + matchedGroupText.length;
+
+    const range = 
+      new vscode.Range(
+        new vscode.Position(lineIndex, startColumnIndex),
+        new vscode.Position(lineIndex, endColumnIndex)
+      );
+
+    if (document.getText(range) === matchedGroupText) {
+      ranges.push(range);
+    } else {
+      vscode.window.showErrorMessage(`Failed to define range of text "${matchedGroupText}" in document`);
+    }
+  }
+
+  return ranges;
+}
+
+/**
+ * Platform binding function
+ *
+ * @param {vscode.ExtensionContext} context
+ * @returns {undefined} There is no an API public surface now (7/3/2019)
+ */
+async function activate(context) {
+
+  const translateText = vscode.commands.registerCommand(
+    "extension.translateText",
+    function () {
+      const editor = vscode.window.activeTextEditor;
+      const selections = editor.selections;
+      
+      translateRanges(selections);
+    }
+  );
+  context.subscriptions.push(translateText);
+
+  const setPreferredLanguageFnc = vscode.commands.registerCommand(
+    "extension.setPreferredLanguage",
+    setPreferredLanguage
+  );
+  context.subscriptions.push(setPreferredLanguageFnc);
+
+  const translateTextPreferred = vscode.commands.registerCommand(
+    "extension.translateTextPreferred",
+    function () {
+      const editor = vscode.window.activeTextEditor;
+      const selections = editor.selections;
+
+      translateRangesToPreferredLanguage(selections)
     }
   );
   context.subscriptions.push(translateTextPreferred);
@@ -422,6 +482,24 @@ async function activate(context) {
     }
   );
   context.subscriptions.push(translateLinesUnderCursorPreferred);
+
+  const translateFileUsingRegExp = vscode.commands.registerCommand(
+    "extension.translateFileUsingRegExp",
+    function () {
+      const ranges = grabRangesUsingRegExp()
+      translateRanges(ranges);
+    }
+  );
+  context.subscriptions.push(translateFileUsingRegExp);
+
+  const translateFileUsingRegExpPreferred = vscode.commands.registerCommand(
+    "extension.translateFileUsingRegExpPreferred",
+    function () {
+      const ranges = grabRangesUsingRegExp()
+      translateRangesToPreferredLanguage(ranges);
+    }
+  );
+  context.subscriptions.push(translateFileUsingRegExpPreferred);
 
   // Don't initialize the server if it's not wanted
   if (
