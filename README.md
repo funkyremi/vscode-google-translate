@@ -58,11 +58,3 @@ Many thanks to the people who participate for making it awesome!
 **Give five stars 🤩**
 
 If you like it, [rate it](https://marketplace.visualstudio.com/items?itemName=funkyremi.vscode-google-translate&ssr=false#review-details)
-
-**Send Bitcoins / Ether 💸**
-
-I develop this extension during my free time and any participation will be appreciated 😊
-
-BTC `163SLzL4NCG5uM4VzffCVJzM3SzyGu9gEq`
-
-ETH `0xFE04170034B5838Ce9FA7b9569C0E6bf07DFd7e0`
