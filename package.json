@@ -41,6 +41,14 @@
             {
                 "command": "extension.translateLinesUnderCursorPreferred",
                 "title": "Translate line(s) under the cursor to preferred language"
+            },
+            {
+                "command": "extension.translateFileUsingRegExp",
+                "title": "Translate using RegExp"
+            },
+            {
+                "command": "extension.translateFileUsingRegExpPreferred",
+                "title": "Translate using RegExp to preferred language"
             }
         ],
         "configuration": {
@@ -178,6 +186,11 @@
                 "vscodeGoogleTranslate.proxyPassword": {
                     "type": "string",
                     "description": "The proxy password (Optional)"
+                },
+                "vscodeGoogleTranslate.translateFileRegExp": {
+                    "type": "string",
+                    "description": "Escaped (as you would put in `new RegExp(\"...\", \"gm\")`) regular expression used to determine what parts document should be translated. RegExp will be executed on the whole file until there are no matches left. The default value should cover yaml and properties files",
+                    "default": "^\\s*(?:[\\{\\}\\.a-zA-Z\\-0-9_]+[:=]{1}|-)[^\\S\\r\\n]*(.+)$"
                 }
             }
         },
