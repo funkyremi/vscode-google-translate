@@ -17,7 +17,11 @@
         "Formatters"
     ],
     "activationEvents": [
-        "*"
+        "onCommand:extension.translateText",
+        "onCommand:extension.translateTextPreferred",
+        "onCommand:extension.translateLinesUnderCursor",
+        "onCommand:extension.setPreferredLanguage",
+        "onCommand:extension.translateLinesUnderCursorPreferred"
     ],
     "main": "./extension",
     "contributes": {
@@ -190,24 +194,24 @@
         ]
     },
     "scripts": {
-        
         "compile": "tsc -p server",
-        "test": "node ./node_modules/vscode/bin/test"
+        "test": "node ./test/runTest.js"
     },
     "devDependencies": {
-        "vscode": "^1.1.37",
         "@types/mocha": "^10.0.6",
         "@types/node": "^20.11.24",
-        "eslint": "^8.56.0"
+        "@vscode/test-electron": "^2.5.2",
+        "eslint": "^8.56.0",
+        "glob": "^11.0.3",
+        "mocha": "^11.7.2"
     },
     "dependencies": {
         "@types/vscode": "^1.84.0",
+        "@vitalets/google-translate-api": "^9.2.1",
         "camelcase": "^8.0.0",
-        "@vitalets/google-translate-api": "^8.0.0",
-        "google-translate-open-api": "^1.3.7",
         "he": "^1.2.0",
+        "http-proxy-agent": "^7.0.2",
         "humanize-string": "^3.0.0",
-        "tunnel": "0.0.6",
         "typescript": "^5.3.3",
         "vscode-languageclient": "^9.0.1"
     }
