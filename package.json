@@ -3,7 +3,7 @@
     "displayName": "Vscode Google Translate",
     "description": "Translate text right in your code",
     "publisher": "funkyremi",
-    "version": "1.4.13",
+    "version": "1.5.0",
     "license": "MIT",
     "icon": "icon.png",
     "repository": {
