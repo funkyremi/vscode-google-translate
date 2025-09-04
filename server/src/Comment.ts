@@ -17,7 +17,7 @@ export class Comment {
     private _setting: ICommentTranslateSettings;
     private _commentParseCache: Map<string, CommentParse> = new Map();
 
-    constructor(extensions: ICommentOption, private _documents: TextDocuments, private _connection: Connection) {
+    constructor(extensions: ICommentOption, private _documents: TextDocuments<TextDocument>, private _connection: Connection) {
         this._setting = { multiLineMerge: false, preferredLanguage: extensions.userLanguage };
         this._textMateService = new TextMateService(extensions.grammarExtensions, extensions.appRoot);
         _documents.onDidClose(e => this._removeCommentParse(e.document));
