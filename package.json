@@ -162,11 +162,6 @@
                     ],
                     "description": "The preferred target language"
                 },
-                "vscodeGoogleTranslate.HoverTranslations": {
-                    "type": "boolean",
-                    "description": "Check to enable hover translation previews (change requires reload)",
-                    "default": "false"
-                },
                 "vscodeGoogleTranslate.proxyHost": {
                     "type": "string",
                     "description": "The proxy host (set it to enable proxy) (Optional)"
@@ -212,7 +207,6 @@
         "he": "^1.2.0",
         "http-proxy-agent": "^7.0.2",
         "humanize-string": "^3.0.0",
-        "typescript": "^5.3.3",
-        "vscode-languageclient": "^9.0.1"
+        "typescript": "^5.3.3"
     }
 }

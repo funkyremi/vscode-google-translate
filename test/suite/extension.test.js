@@ -2,7 +2,7 @@
 const assert = require('assert');
 const vscode = require('vscode');
 
-suite("Extension Tests", function() {
+suite("Extension Command Tests", function() {
     setup(async () => {
         // Set a preferred language to avoid the quick pick menu
         await vscode.workspace.getConfiguration('vscodeGoogleTranslate').update('preferredLanguage', 'French', vscode.ConfigurationTarget.Global);
@@ -23,7 +23,7 @@ suite("Extension Tests", function() {
         // Add a delay to allow for the translation and edit to occur
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        const newText = editor.document.getText(editor.selection);
+        const newText = editor.document.getText();
 
         // We don't know the exact translation, but it should not be the original text.
         assert.notStrictEqual(newText, originalText);
