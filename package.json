@@ -189,7 +189,6 @@
         ]
     },
     "scripts": {
-        "compile": "tsc -p server",
         "test": "node ./test/runTest.js"
     },
     "devDependencies": {

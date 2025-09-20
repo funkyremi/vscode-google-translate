@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.5.0
+- Refactor
+- Bug fixed
+- Dependencies bump
+- Performance improvements
+- Integration tests
+- Remove hover translation feature and typescript code
+
 ## 1.4.13
 - Update translation dependencies
 

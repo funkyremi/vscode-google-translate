@@ -45,9 +45,8 @@ You can use a proxy to translate text with the following settings:
 
 Pull request are welcome. Fork the project, clone it, install dependencies `npm i` and start coding :-).
 
-
-
 Many thanks to the people who participate for making it awesome!
+
 ## Show your support
 
 **Give five stars 🤩**
