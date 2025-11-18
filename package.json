@@ -196,7 +196,7 @@
         "@types/node": "^20.11.24",
         "@vscode/test-electron": "^2.5.2",
         "eslint": "^8.56.0",
-        "glob": "^11.0.3",
+        "glob": "^11.1.0",
         "mocha": "^11.7.2"
     },
     "dependencies": {
